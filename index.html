@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Engarce Talavera</title>
+  <meta name="description" content="Pulseras y collares con talavera de talleres certificados de Puebla y Tlaxcala. No hacemos la talavera: la diseñamos y la ensamblamos en joyería.">
+  <meta name="theme-color" content="#F4EEE3">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    /* Antes de pintar: marca JS activo y muestra la intro solo una vez por sesión. */
+    (function (d) {
+      d.classList.add('js');
+      try {
+        if (sessionStorage.getItem('engarce:intro')) d.classList.add('sin-intro');
+        else sessionStorage.setItem('engarce:intro', '1');
+      } catch (e) {}
+    })(document.documentElement);
+  </script>
+  <script defer src="js/core.js"></script>
+  <script defer src="js/data.js"></script>
+  <script defer src="js/talavera.js"></script>
+  <script defer src="js/sonido.js"></script>
+  <script defer src="js/piezas.js"></script>
+  <script defer src="js/caja.js"></script>
+  <script defer src="js/loader.js"></script>
+  <script defer src="js/cursor.js"></script>
+  <script defer src="js/reveal.js"></script>
+  <script defer src="js/hero3d.js"></script>
+  <script defer src="js/catalogo.js"></script>
+  <script defer src="js/taller.js"></script>
+  <script defer src="js/probador.js"></script>
+  <script defer src="js/ensamble.js"></script>
+  <script defer src="js/cuidados.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <!-- Pantalla de carga: barro crudo → capa de esmalte azul → cocción -->
+  <div class="loader" data-loader aria-hidden="true">
+    <div class="loader__escena">
+      <div class="loader__ficha">
+        <span class="loader__capa"></span>
+        <svg class="loader__patron" viewBox="0 0 100 100">
+          <g fill="#FBF7EE">
+            <path d="M50 14C58 28 58 40 50 50C42 40 42 28 50 14Z"/>
+            <path d="M86 50C72 58 60 58 50 50C60 42 72 42 86 50Z"/>
+            <path d="M50 86C42 72 42 60 50 50C58 60 58 72 50 86Z"/>
+            <path d="M14 50C28 42 40 42 50 50C40 58 28 58 14 50Z"/>
+          </g>
+          <circle cx="50" cy="50" r="6" fill="#D39A2E"/>
+          <g fill="#FBF7EE"><circle cx="10" cy="10" r="4"/><circle cx="90" cy="10" r="4"/><circle cx="10" cy="90" r="4"/><circle cx="90" cy="90" r="4"/></g>
+        </svg>
+        <span class="loader__brillo"></span>
+      </div>
+    </div>
+    <ol class="loader__pasos">
+      <li>Barro</li>
+      <li>Esmalte</li>
+      <li>Horno</li>
+    </ol>
+  </div>
+
+  <div class="textura" aria-hidden="true"></div>
+
+  <header class="cabecera" data-cabecera>
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="#inicio" aria-label="Engarce, volver al inicio">
+        <svg class="marca__ficha" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="1" y="1" width="22" height="22" rx="2" fill="#1A4B8E"/>
+          <path d="M12 3.5C14.2 7 14.2 9.6 12 12C9.8 9.6 9.8 7 12 3.5ZM20.5 12C17 14.2 14.4 14.2 12 12C14.4 9.8 17 9.8 20.5 12ZM12 20.5C9.8 17 9.8 14.4 12 12C14.2 14.4 14.2 17 12 20.5ZM3.5 12C7 9.8 9.6 9.8 12 12C9.6 14.2 7 14.2 3.5 12Z" fill="#FBF7EE"/>
+          <circle cx="12" cy="12" r="1.6" fill="#D39A2E"/>
+        </svg>
+        <span class="marca__nombre">engarce</span>
+      </a>
+
+      <nav class="nav" aria-label="Principal">
+        <ul class="nav__lista" id="nav-lista" data-nav-lista>
+          <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#taller">Taller</a></li>
+          <li><a href="#probador">Probador</a></li>
+          <li><a href="#ensamble">Cómo lo hacemos</a></li>
+          <li><a href="#cuidados">Cuidados</a></li>
+        </ul>
+      </nav>
+
+      <div class="cabecera__acciones">
+        <button class="boton-icono" type="button" data-sonido aria-pressed="true">
+          <span class="sr-only">Sonido de las interacciones</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" fill-opacity=".12"/>
+            <path class="onda" d="M15.5 9a4.2 4.2 0 0 1 0 6"/>
+            <path class="onda" d="M18 6.5a7.8 7.8 0 0 1 0 11"/>
+            <path class="mudo" d="M16 9.5l5 5M21 9.5l-5 5"/>
+          </svg>
+        </button>
+        <button class="boton-icono nav__abrir" type="button" data-menu aria-expanded="false" aria-controls="nav-lista">
+          <span class="sr-only">Menú</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path class="menu-linea menu-linea--1" d="M4 8h16"/>
+            <path class="menu-linea menu-linea--2" d="M4 16h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+      <div class="contenedor hero__grid">
+        <div class="hero__texto">
+          <p class="eyebrow">Joyería ensamblada · Talavera de taller certificado</p>
+          <h1 class="hero__titulo" id="hero-titulo">Talavera que se lleva <em>puesto.</em></h1>
+          <p class="hero__sub">Tomamos la cerámica más bella de México y la ensamblamos para que la luzcas todos los días.</p>
+          <div class="hero__cta">
+            <a class="boton boton--primario" href="#catalogo">Ver el catálogo</a>
+            <a class="boton boton--linea" href="#taller">Arma la tuya</a>
+          </div>
+        </div>
+
+        <figure class="hero__visual">
+          <canvas class="hero__canvas" data-hero-canvas role="img" aria-label="Collar con cinco fichas de talavera que gira en 3D y sigue el movimiento del cursor"></canvas>
+          <figcaption class="hero__notas">
+            <span class="nota nota--a">Ficha central · Flor de Cholula · 2.6 × 1.8 cm</span>
+            <span class="nota nota--b">Cadena · Chapa de oro 14k · 45 cm</span>
+            <span class="nota nota--c">Reverso sin esmalte: el barro del taller</span>
+          </figcaption>
+          <p class="hero__pista">
+            <span class="solo-puntero">Mueve el cursor: el collar te sigue</span>
+            <span class="solo-tactil">Desliza sobre el collar para girarlo</span>
+          </p>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ QUIÉN HACE QUÉ ============ -->
+    <section class="quien" aria-labelledby="quien-titulo" data-reveal="filas">
+      <div class="contenedor">
+        <h2 class="sr-only" id="quien-titulo">Quién hace qué</h2>
+        <ul class="quien__lista">
+          <li class="quien__item">
+            <span class="quien__quien">Lo hace el taller aliado</span>
+            <p class="quien__rol">La talavera</p>
+            <p>Maestros artesanos de Puebla y Tlaxcala preparan el barro, pintan a mano y hornean dos veces. Cada taller tiene certificado de Denominación de Origen.</p>
+          </li>
+          <li class="quien__item">
+            <span class="quien__quien">Lo hacemos nosotros</span>
+            <p class="quien__rol">El diseño y el ensamble</p>
+            <p>Elegimos cada ficha, la cortamos, le ponemos pasador y la montamos en plata, chapa de oro o hilo encerado.</p>
+          </li>
+          <li class="quien__item">
+            <span class="quien__quien">Si se rompe</span>
+            <p class="quien__rol">Hay repuesto</p>
+            <p>Es cerámica y puede pasar. Vendemos fichas sueltas de cada patrón para que tu pieza siga viva.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ CATÁLOGO COLGANTE ============ -->
+    <section class="seccion catalogo" id="catalogo" aria-labelledby="catalogo-titulo" data-reveal="diagonal">
+      <div class="contenedor">
+        <header class="seccion__cabeza">
+          <p class="eyebrow">Catálogo colgante</p>
+          <h2 class="titulo-2" id="catalogo-titulo">Cada pieza, <em>en su gancho.</em></h2>
+          <p class="lede">
+            <span class="solo-puntero">Pasa el cursor sobre una pieza para ver cómo está armada: la ficha se separa del pasador y vuelve a su lugar.</span>
+            <span class="solo-tactil">Desliza por el muro: cada pieza se desarma un instante para mostrarte cómo está hecha. Tócala para ver su historia.</span>
+          </p>
+        </header>
+
+        <div class="filtros">
+          <div class="filtros__grupo">
+            <span class="filtros__label" id="filtro-patron">Patrón de Talavera</span>
+            <div class="filtros__chips" role="group" aria-labelledby="filtro-patron" data-filtro="patron">
+              <button class="chip" type="button" data-valor="todos" aria-pressed="true">Todos</button>
+              <button class="chip" type="button" data-valor="floral" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="cholula"></span>Floral</button>
+              <button class="chip" type="button" data-valor="geometrico" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="estrella"></span>Geométrico</button>
+              <button class="chip" type="button" data-valor="poblano" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="poblano"></span>Clásico Poblano</button>
+              <button class="chip" type="button" data-valor="moderno" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="arco"></span>Moderno</button>
+            </div>
+          </div>
+          <div class="filtros__grupo filtros__grupo--tipo">
+            <span class="filtros__label" id="filtro-tipo">Pieza</span>
+            <div class="segmentado" role="group" aria-labelledby="filtro-tipo" data-filtro="tipo">
+              <button type="button" class="segmentado__op" data-valor="todos" aria-pressed="true">Todo</button>
+              <button type="button" class="segmentado__op" data-valor="collar" aria-pressed="false">Collares</button>
+              <button type="button" class="segmentado__op" data-valor="pulsera" aria-pressed="false">Pulseras</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="catalogo__conteo" data-conteo aria-live="polite">12 piezas</p>
+        <div class="catalogo__tablero">
+          <ul class="catalogo__muro" data-catalogo></ul>
+          <p class="catalogo__vacio" data-catalogo-vacio hidden>No hay piezas con ese patrón. Prueba con otro o arma la tuya en el taller.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TALLER DE COMBINACIONES ============ -->
+    <section class="seccion taller" id="taller" aria-labelledby="taller-titulo" data-reveal="centro">
+      <div class="contenedor">
+        <header class="seccion__cabeza">
+          <p class="eyebrow">Taller de combinaciones</p>
+          <h2 class="titulo-2" id="taller-titulo">Tú eliges la ficha. <em>Nosotros la engarzamos.</em></h2>
+          <p class="lede">Escoge la base, la forma y el metal. Toca una ficha del menú y mira cómo se monta en la joya.</p>
+        </header>
+
+        <div class="taller__app" data-taller>
+          <div class="taller__escenario" data-taller-escenario>
+            <svg class="taller__svg" viewBox="0 0 400 320" data-taller-svg aria-hidden="true"></svg>
+            <div class="engaste" data-engaste data-tipo="collar">
+              <span class="engaste__aro engaste__aro--arriba"></span>
+              <span class="engaste__aro engaste__aro--izq"></span>
+              <span class="engaste__aro engaste__aro--der"></span>
+              <div class="engaste__ficha" data-engaste-ficha></div>
+              <span class="engaste__pulso"></span>
+            </div>
+            <p class="taller__etiqueta" data-taller-etiqueta aria-live="polite"></p>
+          </div>
+
+          <div class="taller__menu">
+            <p class="taller__menu-titulo" id="taller-fichas-titulo">Fichas de talavera</p>
+            <div class="taller__fichas" data-taller-fichas role="group" aria-labelledby="taller-fichas-titulo"></div>
+          </div>
+
+          <div class="taller__opciones">
+            <fieldset class="opciones">
+              <legend class="opciones__titulo">Base</legend>
+              <div class="opciones__fila">
+                <label class="opcion"><input type="radio" name="taller-tipo" id="taller-tipo-collar" value="collar" checked><span>Collar · 45 cm</span></label>
+                <label class="opcion"><input type="radio" name="taller-tipo" id="taller-tipo-pulsera" value="pulsera"><span>Pulsera · 18 cm</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="opciones">
+              <legend class="opciones__titulo">Forma de la ficha</legend>
+              <div class="opciones__fila" data-taller-formas></div>
+            </fieldset>
+            <fieldset class="opciones">
+              <legend class="opciones__titulo">Metal</legend>
+              <div class="opciones__fila" data-taller-metales></div>
+            </fieldset>
+            <div class="taller__total">
+              <div>
+                <p class="taller__precio" data-taller-precio>$0</p>
+                <p class="taller__desglose" data-taller-desglose></p>
+              </div>
+              <button class="boton boton--primario" type="button" data-taller-anadir>Añadir a la caja</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROBADOR DE SILUETA ============ -->
+    <section class="seccion probador" id="probador" aria-labelledby="probador-titulo" data-reveal="damero">
+      <div class="contenedor">
+        <header class="seccion__cabeza">
+          <p class="eyebrow">Probador de silueta</p>
+          <h2 class="titulo-2" id="probador-titulo">Mira cómo cae <em>antes de pedirla.</em></h2>
+          <p class="lede">
+            <span class="solo-puntero">Arrastra un collar al cuello o una pulsera a la muñeca. También puedes hacer clic en una pieza y luego en la silueta.</span>
+            <span class="solo-tactil">Toca una pieza de la bandeja y luego toca la silueta.</span>
+          </p>
+        </header>
+
+        <div class="probador__app" data-probador>
+          <div class="bandeja">
+            <p class="bandeja__estado" data-bandeja-estado aria-live="polite">Elige una pieza de la bandeja.</p>
+            <ul class="bandeja__lista" data-bandeja></ul>
+          </div>
+
+          <div class="probador__lienzos">
+            <div class="probador__pestanas" role="group" aria-label="Silueta visible">
+              <button type="button" class="segmentado__op" data-pestana="cuello" aria-pressed="true">Cuello</button>
+              <button type="button" class="segmentado__op" data-pestana="muneca" aria-pressed="false">Muñeca</button>
+            </div>
+
+            <figure class="lienzo is-visible" data-zona="cuello">
+              <svg class="lienzo__svg" viewBox="0 0 400 360" aria-hidden="true">
+                <defs>
+                  <linearGradient id="piel-busto" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0" stop-color="#EDE6DA"/>
+                    <stop offset=".22" stop-color="#FFFDF8"/>
+                    <stop offset=".78" stop-color="#FFFDF8"/>
+                    <stop offset="1" stop-color="#EDE6DA"/>
+                  </linearGradient>
+                  <filter id="sombra-silueta" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#102F5A" flood-opacity=".12"/>
+                  </filter>
+                </defs>
+                <g filter="url(#sombra-silueta)">
+                  <path fill="url(#piel-busto)" d="M162 40C162 70 164 96 166 116C168 136 142 148 108 157C70 166 40 181 27 210C16 234 12 300 12 360H388C388 300 384 234 373 210C360 181 330 166 292 157C258 148 232 136 234 116C236 96 238 70 238 40Z"/>
+                  <ellipse cx="200" cy="40" rx="38" ry="8" fill="#F1ECE3"/>
+                </g>
+                <path d="M148 176Q172 168 190 178M252 176Q228 168 210 178" fill="none" stroke="#1A4B8E" stroke-opacity=".08" stroke-width="2" stroke-linecap="round"/>
+                <g data-capa="collar"></g>
+              </svg>
+              <button class="lienzo__objetivo" type="button" data-objetivo>
+                <span class="sr-only">Probar la pieza seleccionada en el cuello</span>
+              </button>
+              <figcaption class="lienzo__pie">
+                <span class="lienzo__nombre">Cuello</span>
+                <span class="lienzo__info" data-lienzo-info></span>
+                <span class="lienzo__acciones" data-lienzo-acciones hidden>
+                  <button type="button" class="enlace" data-lienzo-anadir>Añadir a la caja</button>
+                  <button type="button" class="enlace enlace--suave" data-lienzo-quitar>Quitar</button>
+                </span>
+              </figcaption>
+              <p class="lienzo__aviso" data-lienzo-aviso aria-live="polite"></p>
+            </figure>
+
+            <figure class="lienzo" data-zona="muneca">
+              <svg class="lienzo__svg" viewBox="0 0 400 360" aria-hidden="true">
+                <defs>
+                  <!-- Cada silueta lleva sus propios defs: en móvil la otra está oculta (display:none). -->
+                  <linearGradient id="piel-mano" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0" stop-color="#EDE6DA"/>
+                    <stop offset=".25" stop-color="#FFFDF8"/>
+                    <stop offset=".75" stop-color="#FFFDF8"/>
+                    <stop offset="1" stop-color="#EDE6DA"/>
+                  </linearGradient>
+                  <filter id="sombra-mano" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#102F5A" flood-opacity=".12"/>
+                  </filter>
+                </defs>
+                <g data-capa="pulsera-atras"></g>
+                <g filter="url(#sombra-mano)" fill="url(#piel-mano)">
+                  <path d="M146 360C150 318 160 284 166 262C168 252 168 244 168 236H232C232 244 232 252 234 262C240 284 250 318 254 360Z"/>
+                  <rect x="156" y="116" width="88" height="130" rx="34"/>
+                  <rect x="160" y="54" width="18" height="96" rx="9"/>
+                  <rect x="180" y="40" width="18" height="100" rx="9"/>
+                  <rect x="200" y="44" width="18" height="100" rx="9"/>
+                  <rect x="220" y="62" width="17" height="90" rx="8.5"/>
+                  <rect x="150" y="140" width="19" height="70" rx="9.5" transform="rotate(-38 160 200)"/>
+                </g>
+                <g data-capa="pulsera-frente"></g>
+              </svg>
+              <button class="lienzo__objetivo" type="button" data-objetivo>
+                <span class="sr-only">Probar la pieza seleccionada en la muñeca</span>
+              </button>
+              <figcaption class="lienzo__pie">
+                <span class="lienzo__nombre">Muñeca</span>
+                <span class="lienzo__info" data-lienzo-info></span>
+                <span class="lienzo__acciones" data-lienzo-acciones hidden>
+                  <button type="button" class="enlace" data-lienzo-anadir>Añadir a la caja</button>
+                  <button type="button" class="enlace enlace--suave" data-lienzo-quitar>Quitar</button>
+                </span>
+              </figcaption>
+              <p class="lienzo__aviso" data-lienzo-aviso aria-live="polite"></p>
+            </figure>
+          </div>
+        </div>
+        <p class="probador__nota">La silueta es una referencia de proporción: un collar de 45 cm y una pulsera de 18 cm sobre un cuerpo de talla media.</p>
+      </div>
+    </section>
+
+    <!-- ============ ENSAMBLO, LUEGO EXISTO ============ -->
+    <section class="seccion ensamble" id="ensamble" aria-labelledby="ensamble-titulo" data-reveal="diagonal">
+      <div class="contenedor ensamble__grid">
+        <header class="seccion__cabeza ensamble__cabeza">
+          <p class="eyebrow">Transparencia</p>
+          <h2 class="titulo-2" id="ensamble-titulo">Ensamblo, <em>luego existo.</em></h2>
+          <p class="lede">No hacemos la talavera, hacemos que te la quieras poner.</p>
+        </header>
+
+        <div class="division">
+          <div class="division__col">
+            <p class="division__quien">Lo hace el taller aliado</p>
+            <ol class="division__lista">
+              <li>Prepara el barro: mezcla barro negro y blanco de la región y lo deja reposar.</li>
+              <li>Moldea la pieza y la hornea por primera vez.</li>
+              <li>La esmalta y la pinta a mano.</li>
+              <li>La hornea por segunda vez y la certifica.</li>
+            </ol>
+          </div>
+          <div class="division__col division__col--nuestra">
+            <p class="division__quien">Lo hacemos nosotros</p>
+            <ol class="division__lista">
+              <li>Elegimos cada ficha y revisamos que no traiga grietas.</li>
+              <li>La cortamos al tamaño de la joya y pulimos el canto.</li>
+              <li>Unimos pasadores, aros y cadena.</li>
+              <li>La empacamos en su caja de madera.</li>
+            </ol>
+          </div>
+        </div>
+
+        <figure class="video" data-ensamble>
+          <div class="video__marco">
+            <!-- Para usar un video real: pon la ruta en data-src (webm/mp4, menos de 2 MB) y un poster. -->
+            <video class="video__real" data-src="" muted loop playsinline preload="none" hidden></video>
+            <svg class="video__svg" viewBox="0 0 400 250" role="img" aria-labelledby="video-titulo video-desc">
+              <title id="video-titulo">Cómo ensamblamos una pieza</title>
+              <desc id="video-desc">Animación en bucle de cuatro pasos: recibimos las fichas del taller aliado, las cortamos, unimos el pasador y la cadena, y empacamos la pieza en una caja de madera.</desc>
+              <defs>
+                <symbol id="mano" viewBox="0 0 60 90">
+                  <rect x="15" y="54" width="30" height="36" rx="3" fill="#102F5A"/>
+                  <rect x="13" y="50" width="34" height="8" rx="3" fill="#1A4B8E"/>
+                  <path d="M16 52C12 40 12 22 18 13C22 7 38 7 42 13C48 22 48 40 44 52Z" fill="#D6BE9C"/>
+                  <path d="M18 36C9 32 5 24 8 19C11 15 17 20 21 28Z" fill="#C9AE89"/>
+                  <path d="M25 14V27M31 12V27M37 14V27" stroke="#B89A74" stroke-width="1.3" stroke-linecap="round"/>
+                </symbol>
+                <pattern id="rejilla" width="12" height="12" patternUnits="userSpaceOnUse">
+                  <path d="M12 0H0V12" fill="none" stroke="#FBF7EE" stroke-opacity=".16" stroke-width=".8"/>
+                </pattern>
+                <clipPath id="corte-1"><rect x="150" y="75" width="50" height="50"/></clipPath>
+                <clipPath id="corte-2"><rect x="200" y="75" width="50" height="50"/></clipPath>
+                <clipPath id="corte-3"><rect x="150" y="125" width="50" height="56"/></clipPath>
+                <clipPath id="corte-4"><rect x="200" y="125" width="50" height="56"/></clipPath>
+              </defs>
+              <rect width="400" height="250" fill="#F4EEE3"/>
+
+              <!-- 1 · Recibimos -->
+              <g class="escena e1" data-escena="0">
+                <rect x="137" y="118" width="126" height="10" fill="#7E5C38"/>
+                <g class="e1-ficha" style="--i:0"><g data-ficha="estrella" data-forma="square" data-x="152" data-y="94" data-s="30"></g></g>
+                <g class="e1-ficha" style="--i:1"><g data-ficha="cholula" data-forma="round" data-x="185" data-y="88" data-s="30"></g></g>
+                <g class="e1-ficha" style="--i:2"><g data-ficha="poblano" data-forma="square" data-x="218" data-y="94" data-s="30"></g></g>
+                <rect x="135" y="126" width="130" height="80" fill="#C8A172"/>
+                <rect x="135" y="126" width="130" height="5" fill="#B38A5C"/>
+                <path class="e1-solapa" d="M135 126H199L191 104H127Z" fill="#D6B385"/>
+                <path class="e1-solapa" d="M201 126H265L273 104H209Z" fill="#D6B385"/>
+                <rect x="168" y="150" width="64" height="32" fill="#FBF7EE"/>
+                <text x="200" y="163" text-anchor="middle" class="svg-etiqueta">TALLER ALIADO</text>
+                <text x="200" y="174" text-anchor="middle" class="svg-etiqueta svg-etiqueta--sub">Puebla · D.O.</text>
+                <g class="e1-manos">
+                  <use href="#mano" width="52" height="78" transform="translate(114 222) rotate(40) translate(-26 -70)"/>
+                  <use href="#mano" width="52" height="78" transform="translate(286 222) rotate(-40) scale(-1 1) translate(-26 -70)"/>
+                </g>
+                <g class="e1-sello">
+                  <circle cx="318" cy="74" r="22" fill="#FBF7EE" stroke="#1A4B8E" stroke-width="2"/>
+                  <path d="M307 74l8 8 14-16" fill="none" stroke="#1A4B8E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <text x="318" y="112" text-anchor="middle" class="svg-etiqueta">REVISADA</text>
+                </g>
+              </g>
+
+              <!-- 2 · Cortamos -->
+              <g class="escena e2" data-escena="1">
+                <rect x="60" y="28" width="280" height="196" rx="6" fill="#1D3E6C"/>
+                <rect x="60" y="28" width="280" height="196" rx="6" fill="url(#rejilla)"/>
+                <g class="e2-q e2-q1" clip-path="url(#corte-1)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
+                <g class="e2-q e2-q2" clip-path="url(#corte-2)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
+                <g class="e2-q e2-q3" clip-path="url(#corte-3)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
+                <g class="e2-q e2-q4" clip-path="url(#corte-4)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
+                <path class="e2-guia" d="M200 56V196M124 125H276" stroke="#D39A2E" stroke-width="1.4" stroke-dasharray="4 4"/>
+                <path class="e2-corte e2-corte--v" d="M200 76V178" pathLength="1"/>
+                <path class="e2-corte e2-corte--h" d="M151 125H249" pathLength="1"/>
+                <g class="e2-disco">
+                  <g class="e2-sierra">
+                    <circle r="17" fill="#C9CED6"/>
+                    <circle r="16" fill="none" stroke="#8B93A0" stroke-width="3" stroke-dasharray="2.2 2"/>
+                    <circle r="4" fill="#5B6270"/>
+                  </g>
+                </g>
+                <use href="#mano" width="52" height="78" transform="translate(84 236) rotate(62) translate(-26 -70)"/>
+              </g>
+
+              <!-- 3 · Unimos -->
+              <g class="escena e3" data-escena="2">
+                <path class="e3-cadena e3-cadena--base" d="M20 62Q110 110 200 102Q290 110 380 62" pathLength="1"/>
+                <path class="e3-cadena e3-cadena--luz" d="M20 62Q110 110 200 102Q290 110 380 62" pathLength="1"/>
+                <g class="e3-dije">
+                  <g data-ficha="cholula" data-forma="round" data-x="170" data-y="112" data-s="60"></g>
+                  <g class="e3-pasador">
+                    <circle cx="200" cy="104" r="6.5" fill="none" stroke="#9AA2AD" stroke-width="2.8"/>
+                    <rect x="195.5" y="109" width="9" height="8" rx="1.5" fill="#A7AEB8"/>
+                  </g>
+                  <circle class="e3-pegamento" cx="200" cy="116" r="6" fill="#D39A2E"/>
+                </g>
+                <g class="e3-pinza">
+                  <path d="M196 100L182 18M204 100L218 18" stroke="#8B93A0" stroke-width="3" stroke-linecap="round"/>
+                  <use href="#mano" width="52" height="78" transform="translate(200 2) rotate(180) translate(-26 -70)"/>
+                </g>
+                <text x="200" y="232" text-anchor="middle" class="svg-etiqueta e3-rotulo">PASADOR Y ARO DE PLATA .925</text>
+              </g>
+
+              <!-- 4 · Empacamos -->
+              <g class="escena e4" data-escena="3">
+                <ellipse cx="200" cy="224" rx="92" ry="6" fill="#1A4B8E" opacity=".08"/>
+                <g class="e4-conjunto">
+                  <rect x="137" y="146" width="126" height="10" fill="#5A3820"/>
+                  <g class="e4-tarjeta">
+                    <rect x="164" y="112" width="72" height="42" fill="#FBF7EE" stroke="#E3D8C6"/>
+                    <text x="200" y="128" text-anchor="middle" class="svg-etiqueta">CUIDADOS</text>
+                    <path d="M176 136H224M176 143H214" stroke="#1A4B8E" stroke-opacity=".3" stroke-width="2"/>
+                  </g>
+                  <g class="e4-collar">
+                    <path d="M200 40C182 60 176 100 200 124C224 100 218 60 200 40Z" fill="none" stroke="#C79A45" stroke-width="2.2"/>
+                    <g data-ficha="cholula" data-forma="drop" data-x="186" data-y="124" data-s="28"></g>
+                    <use href="#mano" width="44" height="66" transform="translate(200 44) rotate(180) translate(-22 -60)"/>
+                  </g>
+                  <rect x="135" y="150" width="130" height="64" rx="3" fill="#A8744A"/>
+                  <path d="M138 164C170 160 210 168 262 162M138 180C176 176 214 184 262 178M138 198C166 196 222 202 262 196" stroke="#8C5C37" stroke-width="1.4" fill="none"/>
+                  <rect x="190" y="170" width="20" height="20" rx="1.5" fill="#FBF7EE"/>
+                  <path d="M200 172L208 180L200 188L192 180Z" fill="#1A4B8E"/>
+                  <circle cx="200" cy="180" r="2.4" fill="#D39A2E"/>
+                  <g class="e4-tapa">
+                    <rect x="131" y="130" width="138" height="22" rx="3" fill="#B98356"/>
+                    <path d="M134 139C170 135 220 143 266 137" stroke="#9A6A40" stroke-width="1.2" fill="none"/>
+                    <rect x="131" y="148" width="138" height="4" fill="#8C5C37"/>
+                    <rect x="194" y="146" width="12" height="10" rx="2" fill="#C9A15B"/>
+                  </g>
+                </g>
+                <g class="e4-etiqueta">
+                  <path d="M268 158L292 150" stroke="#8C5C37" stroke-width="1.2"/>
+                  <path d="M292 140H348V168H292L284 154Z" fill="#E9D9BE"/>
+                  <text x="318" y="152" text-anchor="middle" class="svg-etiqueta">ENGARCE</text>
+                  <text x="318" y="162" text-anchor="middle" class="svg-etiqueta svg-etiqueta--sub">Lote 24-117</text>
+                </g>
+              </g>
+            </svg>
+            <button class="video__pausa" type="button" data-pausa aria-pressed="false">
+              <span class="sr-only">Pausar la animación</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icono-pausa" d="M8 6h3v12H8zM13 6h3v12h-3z"/><path class="icono-play" d="M8 5.5v13l10-6.5z"/></svg>
+            </button>
+          </div>
+          <figcaption>
+            <ol class="video__pasos">
+              <li><button type="button" class="paso" data-paso="0"><span class="paso__barra"></span><span class="paso__num">1</span><span class="paso__titulo">Recibimos</span><span class="paso__texto">Revisamos cada ficha que llega del taller: color, esmalte y que no traiga grietas.</span></button></li>
+              <li><button type="button" class="paso" data-paso="1"><span class="paso__barra"></span><span class="paso__num">2</span><span class="paso__titulo">Cortamos</span><span class="paso__texto">Cortamos el azulejo al tamaño de la joya y pulimos el canto para que no raspe.</span></button></li>
+              <li><button type="button" class="paso" data-paso="2"><span class="paso__barra"></span><span class="paso__num">3</span><span class="paso__titulo">Unimos</span><span class="paso__texto">Pegamos el pasador, montamos el aro y pasamos la cadena o el hilo.</span></button></li>
+              <li><button type="button" class="paso" data-paso="3"><span class="paso__barra"></span><span class="paso__num">4</span><span class="paso__titulo">Empacamos</span><span class="paso__texto">Cada pieza va en su caja de madera, con tarjeta de cuidados y el origen de su ficha.</span></button></li>
+            </ol>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ CUIDADOS Y REPUESTOS ============ -->
+    <section class="seccion cuidados" id="cuidados" aria-labelledby="cuidados-titulo" data-reveal="filas">
+      <div class="contenedor cuidados__grid">
+        <header class="seccion__cabeza cuidados__cabeza">
+          <p class="eyebrow">Cuidados y repuestos</p>
+          <h2 class="titulo-2" id="cuidados-titulo">Es cerámica. <em>Tratémosla como tal.</em></h2>
+          <p class="lede">Te decimos lo que le puede pasar a tu pieza y cómo evitarlo. Y si pasa, tenemos repuesto.</p>
+        </header>
+
+        <div class="acordeon" data-acordeon>
+          <div class="acordeon__item is-abierto">
+            <h3 class="acordeon__encabezado">
+              <button class="acordeon__boton" type="button" id="ac-b1" aria-expanded="true" aria-controls="ac-p1">
+                La talavera puede romperse
+                <span class="acordeon__icono" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="acordeon__panel" id="ac-p1" role="region" aria-labelledby="ac-b1">
+              <div class="acordeon__contenido"><div class="acordeon__texto">
+                <p>Es barro horneado dos veces y esmaltado a mano. Aguanta el uso diario, pero no un golpe contra el piso, una puerta o el lavabo. Si cae sobre algo duro, se puede despostillar o partir.</p>
+                <p>No te lo escondemos: es parte de llevar algo hecho a mano. Por eso vendemos repuestos de cada ficha.</p>
+              </div></div>
+            </div>
+          </div>
+          <div class="acordeon__item">
+            <h3 class="acordeon__encabezado">
+              <button class="acordeon__boton" type="button" id="ac-b2" aria-expanded="false" aria-controls="ac-p2">
+                Cómo limpiarla
+                <span class="acordeon__icono" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="acordeon__panel" id="ac-p2" role="region" aria-labelledby="ac-b2" inert>
+              <div class="acordeon__contenido"><div class="acordeon__texto">
+                <p>Usa un paño suave, seco o apenas húmedo. Sécala enseguida. No uses limpiadores con cloro, alcohol ni máquinas de ultrasonido: pueden opacar el esmalte y aflojar el pegamento del pasador.</p>
+              </div></div>
+            </div>
+          </div>
+          <div class="acordeon__item">
+            <h3 class="acordeon__encabezado">
+              <button class="acordeon__boton" type="button" id="ac-b3" aria-expanded="false" aria-controls="ac-p3">
+                Agua, perfume y sol
+                <span class="acordeon__icono" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="acordeon__panel" id="ac-p3" role="region" aria-labelledby="ac-b3" inert>
+              <div class="acordeon__contenido"><div class="acordeon__texto">
+                <p>El esmalte de la talavera no se decolora con el sol. El metal sí reacciona: quítatela para bañarte o nadar, y ponte el perfume antes que la joya. La chapa de oro dura más si no la mojas.</p>
+              </div></div>
+            </div>
+          </div>
+          <div class="acordeon__item">
+            <h3 class="acordeon__encabezado">
+              <button class="acordeon__boton" type="button" id="ac-b4" aria-expanded="false" aria-controls="ac-p4">
+                Guárdala en su caja
+                <span class="acordeon__icono" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="acordeon__panel" id="ac-p4" role="region" aria-labelledby="ac-b4" inert>
+              <div class="acordeon__contenido"><div class="acordeon__texto">
+                <p>La caja de madera trae un compartimento por pieza. Guárdalas separadas: el esmalte raya el metal y el metal raya el esmalte.</p>
+              </div></div>
+            </div>
+          </div>
+          <div class="acordeon__item">
+            <h3 class="acordeon__encabezado">
+              <button class="acordeon__boton" type="button" id="ac-b5" aria-expanded="false" aria-controls="ac-p5">
+                Si se rompe, no la tires
+                <span class="acordeon__icono" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="acordeon__panel" id="ac-p5" role="region" aria-labelledby="ac-b5" inert>
+              <div class="acordeon__contenido"><div class="acordeon__texto">
+                <p>Pide una ficha de repuesto del mismo patrón. Llega con su aro de cambio: lo abres con unas pinzas planas, cambias la ficha y lo vuelves a cerrar. Si prefieres, mándanos la pieza y la cambiamos nosotros.</p>
+                <p>Si tu pedido llega roto, te mandamos la ficha sin costo.</p>
+              </div></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="repuesto" aria-labelledby="repuesto-titulo" data-repuesto>
+          <p class="eyebrow">Repuestos</p>
+          <h3 class="repuesto__titulo" id="repuesto-titulo">Ficha de repuesto</h3>
+          <div class="repuesto__vista" aria-hidden="true">
+            <span class="repuesto__rota" data-repuesto-rota></span>
+            <svg class="repuesto__flecha" viewBox="0 0 40 12"><path d="M1 6H36M31 1.5L37 6L31 10.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="repuesto__nueva" data-repuesto-nueva></span>
+          </div>
+          <div class="repuesto__campos">
+            <label class="campo">
+              <span class="campo__label">Patrón</span>
+              <select id="repuesto-patron" data-repuesto-patron></select>
+            </label>
+            <label class="campo">
+              <span class="campo__label">Forma</span>
+              <select id="repuesto-forma" data-repuesto-forma></select>
+            </label>
+          </div>
+          <p class="repuesto__incluye">Incluye aro de cambio y tarjeta con instrucciones.</p>
+          <div class="repuesto__pie">
+            <p class="repuesto__precio" data-repuesto-precio>$180</p>
+            <button class="boton boton--terracota" type="button" data-repuesto-anadir>Comprar repuesto</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor pie__grid">
+      <div class="pie__marca">
+        <p class="marca__nombre">engarce</p>
+        <p class="pie__lema">Talavera de taller certificado, ensamblada en joyería. La cerámica es de ellos; el diseño y el ensamble, nuestros.</p>
+      </div>
+      <nav class="pie__nav" aria-label="Secundaria">
+        <ul>
+          <li><a href="#catalogo">Collares y pulseras</a></li>
+          <li><a href="#taller">Taller de combinaciones</a></li>
+          <li><a href="#cuidados">Repuestos de fichas</a></li>
+          <li><a href="#ensamble">Cómo lo hacemos</a></li>
+        </ul>
+      </nav>
+      <p class="pie__legal">Prototipo de diseño. Los nombres de talleres, lotes y precios son de ejemplo.</p>
+    </div>
+  </footer>
+
+  <!-- Carrito flotante: caja de madera -->
+  <button class="caja" type="button" data-caja aria-label="Abrir tu caja, 0 piezas">
+    <svg class="caja__svg" viewBox="0 0 64 56" aria-hidden="true">
+      <ellipse cx="32" cy="53" rx="24" ry="2.4" fill="#102F5A" opacity=".14"/>
+      <rect x="9" y="20" width="46" height="6" fill="#5A3820"/>
+      <rect x="7" y="23" width="50" height="28" rx="2.5" fill="#A8744A"/>
+      <path d="M9 30C20 28 30 32 55 29M9 38C22 36 34 40 55 37M9 45C18 44 40 47 55 44" stroke="#8C5C37" stroke-width=".8" fill="none"/>
+      <rect x="26" y="31" width="12" height="12" rx="1" fill="#FBF7EE"/>
+      <path d="M32 32.5L36.5 37L32 41.5L27.5 37Z" fill="#1A4B8E"/>
+      <circle cx="32" cy="37" r="1.5" fill="#D39A2E"/>
+      <g class="caja__tapa">
+        <rect x="5" y="14" width="54" height="10" rx="2.5" fill="#B98356"/>
+        <path d="M7 18C22 16 40 20 57 17" stroke="#9A6A40" stroke-width=".8" fill="none"/>
+        <rect x="5" y="22" width="54" height="2" fill="#8C5C37"/>
+        <rect x="29.5" y="21" width="5" height="5" rx="1" fill="#C9A15B"/>
+      </g>
+    </svg>
+    <span class="caja__cuenta" data-caja-cuenta data-n="0">0</span>
+  </button>
+
+  <!-- Panel de la caja -->
+  <dialog class="hoja hoja--lateral" data-panel-caja aria-labelledby="caja-titulo">
+    <div class="hoja__cuerpo panel-caja">
+      <div class="panel-caja__cabeza">
+        <h2 class="panel-caja__titulo" id="caja-titulo">Tu caja</h2>
+        <button class="hoja__cerrar" type="button" data-cerrar>
+          <span class="sr-only">Cerrar</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="panel-caja__vacio" data-caja-vacio>Tu caja está vacía. Lo que añadas llega aquí, cada pieza en su compartimento.</p>
+      <ul class="panel-caja__lista" data-caja-lista></ul>
+      <div class="panel-caja__pie" data-caja-pie hidden>
+        <p class="panel-caja__subtotal"><span>Subtotal</span><strong data-caja-subtotal>$0</strong></p>
+        <p class="panel-caja__nota">El envío se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.</p>
+        <button class="boton boton--primario boton--ancho" type="button" data-caja-pagar>Ir a pagar</button>
+        <p class="panel-caja__aviso" data-caja-aviso hidden>Este prototipo no cobra. Aquí se conectará la pasarela de pago.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Detalle de producto -->
+  <dialog class="hoja hoja--centro" data-detalle aria-labelledby="detalle-nombre">
+    <div class="hoja__cuerpo detalle">
+      <button class="hoja__cerrar detalle__cerrar" type="button" data-cerrar>
+        <span class="sr-only">Cerrar</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div class="detalle__visual">
+        <div class="detalle__escena" data-detalle-escena></div>
+        <p class="detalle__pista">Pasa el cursor o toca la pieza para ver cómo está armada.</p>
+      </div>
+      <div class="detalle__info">
+        <p class="eyebrow" data-detalle-patron></p>
+        <h2 class="detalle__nombre" id="detalle-nombre" data-detalle-nombre></h2>
+        <p class="detalle__precio" data-detalle-precio></p>
+        <p class="detalle__desc" data-detalle-desc></p>
+        <dl class="detalle__specs" data-detalle-specs></dl>
+        <section class="viaje" data-viaje aria-labelledby="viaje-titulo">
+          <h3 class="viaje__titulo" id="viaje-titulo">El viaje de la pieza</h3>
+          <div class="viaje__ruta">
+            <span class="viaje__linea" aria-hidden="true"></span>
+            <span class="viaje__viajero" aria-hidden="true"></span>
+            <ol class="viaje__puntos" data-viaje-puntos></ol>
+          </div>
+        </section>
+        <div class="detalle__acciones">
+          <button class="boton boton--primario" type="button" data-detalle-anadir>Añadir a la caja</button>
+          <button class="boton boton--linea" type="button" data-detalle-probar>Probar en silueta</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <p class="sr-only" id="anuncios" aria-live="polite"></p>
+
+  <!-- Cursor propio (solo con ratón) -->
+  <canvas class="cursor-estela" data-estela aria-hidden="true"></canvas>
+  <div class="cursor" data-cursor aria-hidden="true"><span class="cursor__disco"></span><span class="cursor__punto"></span></div>
+</body>
+</html>
