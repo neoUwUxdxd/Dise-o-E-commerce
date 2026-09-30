@@ -13,7 +13,7 @@
         `<h3 class="producto__nombre">${p.name}</h3>` +
         `<div class="producto__pie">` +
           `<p class="producto__precio">${TL.precio(p.price)} <span>MXN</span></p>` +
-          `<button class="producto__anadir" type="button" data-anadir>Añadir a la caja<span class="sr-only">: ${p.name}</span></button>` +
+          `<button class="producto__anadir" type="button" data-anadir>Añadir<span class="producto__anadir-mas"> a la caja</span><span class="sr-only">: ${p.name}</span></button>` +
         `</div>` +
       `</div></li>`;
   }
@@ -41,6 +41,14 @@
 
     document.querySelectorAll('[data-chip-ficha]').forEach((el) => {
       el.innerHTML = TL.talavera.svg(el.dataset.chipFicha, 'square');
+    });
+
+    // En móvil los chips se deslizan: el borde se desvanece mientras quede algo por ver.
+    document.querySelectorAll('.filtros__chips').forEach((fila) => {
+      const revisar = () => fila.classList.toggle('is-final', fila.scrollLeft + fila.clientWidth >= fila.scrollWidth - 4);
+      fila.addEventListener('scroll', revisar, { passive: true });
+      window.addEventListener('resize', revisar, { passive: true });
+      revisar();
     });
 
     // ---- Filtros
@@ -77,6 +85,28 @@
         });
       }, salen.length ? 300 : 0);
     }
+
+    // ---- Orden: se reordena el muro y las piezas visibles se vuelven a colgar
+    const selOrden = document.querySelector('[data-orden]');
+    const criterios = {
+      destacadas: null,
+      'precio-asc': (a, b) => TL.producto(a.dataset.id).price - TL.producto(b.dataset.id).price,
+      'precio-desc': (a, b) => TL.producto(b.dataset.id).price - TL.producto(a.dataset.id).price
+    };
+    if (selOrden) selOrden.addEventListener('change', () => {
+      const fn = criterios[selOrden.value];
+      const orden = fn ? tarjetas.slice().sort(fn) : tarjetas;
+      orden.forEach((c) => muro.appendChild(c));
+      TL.anunciar(`Piezas ordenadas: ${selOrden.selectedOptions[0].textContent.toLowerCase()}.`);
+      if (TL.motion.reduce) return;
+      orden.filter((c) => !c.hidden).forEach((c, i) => {
+        c.style.setProperty('--orden', i);
+        c.classList.remove('is-colgando');
+        void c.offsetWidth;
+        c.classList.add('is-colgando');
+        setTimeout(() => c.classList.remove('is-colgando'), 1300 + i * 80);
+      });
+    });
 
     document.querySelectorAll('[data-filtro]').forEach((grupo) => {
       grupo.addEventListener('click', (e) => {
@@ -118,7 +148,8 @@
         TL.caja.agregar(itemCaja(p), li.querySelector('.ficha-slot .ficha'));
         return;
       }
-      if (e.target.closest('[data-abrir]')) abrirDetalle(p);
+      // El nombre también abre el detalle (con ratón; con teclado se usa la escena).
+      if (e.target.closest('[data-abrir], .producto__nombre')) abrirDetalle(p);
     });
   };
 
@@ -149,6 +180,25 @@
       `</li>`
     ).join('');
     viaje.classList.remove('is-trazando');
+
+    // Otras piezas del mismo patrón
+    const afines = TL.products.filter((x) => x.family === p.family && x.id !== p.id);
+    $('[data-afines]').hidden = afines.length === 0;
+    $('[data-afines-titulo]').textContent = `Más del patrón ${TL.families[p.family].label}`;
+    $('[data-afines-lista]').innerHTML = afines.map((x) =>
+      `<li><button class="afin" type="button" data-afin="${x.id}">` +
+        `<span class="afin__ficha">${TL.talavera.svg(x.design, x.shape)}</span>` +
+        `<span class="afin__texto"><span class="afin__nombre">${x.name}</span>` +
+        `<span class="afin__precio">${TL.precio(x.price)}</span></span>` +
+      `</button></li>`
+    ).join('');
+    $('[data-afines-lista]').onclick = (e) => {
+      const b = e.target.closest('[data-afin]');
+      if (!b) return;
+      abrirDetalle(TL.producto(b.dataset.afin));
+      dlg.querySelectorAll('.hoja__cuerpo, .detalle__info').forEach((el) => { el.scrollTop = 0; });
+      $('[data-detalle-nombre]').focus({ preventScroll: true });
+    };
 
     $('[data-detalle-anadir]').onclick = () => TL.caja.agregar(itemCaja(p), escena.querySelector('.ficha-slot .ficha'));
     $('[data-detalle-probar]').onclick = () => {

@@ -350,6 +350,20 @@ legend { padding: 0; }
     color: var(--azul-osc);
     border-bottom: 1px solid var(--linea);
   }
+  .nav__lista a[aria-current="true"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--azul);
+  }
+  /* Ficha pequeña que marca dónde estás */
+  .nav__lista a[aria-current="true"]::after {
+    content: "";
+    width: .6rem;
+    height: .6rem;
+    background: var(--terracota);
+    transform: rotate(45deg);
+  }
 }
 
 @media (min-width: 900px) {
@@ -370,6 +384,8 @@ legend { padding: 0; }
     transition: transform .35s var(--ease-out);
   }
   .nav__lista a:hover::after { transform: scaleX(1); transform-origin: left; }
+  .nav__lista a[aria-current="true"] { color: var(--azul); }
+  .nav__lista a[aria-current="true"]::after { transform: scaleX(1); }
 }
 
 /* 5. Hero ------------------------------------------------------------------ */
@@ -552,6 +568,13 @@ legend { padding: 0; }
   scroll-padding-inline: var(--gutter);
 }
 .filtros__chips::-webkit-scrollbar { display: none; }
+@media (max-width: 899px) {
+  .filtros__chips {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent);
+  }
+  .filtros__chips.is-final { -webkit-mask-image: none; mask-image: none; }
+}
 
 .chip {
   flex: none;
@@ -583,11 +606,46 @@ legend { padding: 0; }
   .filtros__chips { margin: 0; padding: 0; flex-wrap: wrap; overflow: visible; }
 }
 
-.catalogo__conteo {
+.catalogo__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1rem;
   margin-bottom: 1rem;
+}
+.catalogo__conteo {
   font: italic 500 1rem/1 var(--f-display);
   color: var(--tinta-2);
 }
+.orden {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+}
+.orden__label {
+  font: 600 .64rem/1 var(--f-texto);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+.orden select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 2.5rem;
+  padding: .45rem 2rem .45rem .75rem;
+  font-size: .84rem;
+  color: var(--azul-osc);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231A4B8E' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .75rem center / 11px,
+    var(--esmalte);
+  border: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+.orden select:hover { box-shadow: inset 0 0 0 1px var(--linea-fuerte); }
 
 /* El muro: tablero perforado de taller con ganchos de latón */
 .catalogo__tablero {
@@ -732,7 +790,15 @@ legend { padding: 0; }
 .producto__nombre {
   font: 500 1.14rem/1.2 var(--f-display);
   color: var(--azul-osc);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .25em;
+  transition: text-decoration-color .2s;
 }
+.producto:has(.producto__escena:hover) .producto__nombre,
+.producto__nombre:hover { text-decoration-color: currentColor; }
 .producto__pie {
   display: flex;
   flex-wrap: wrap;
@@ -771,6 +837,17 @@ legend { padding: 0; }
 }
 .producto__anadir:hover { background: var(--azul); color: var(--esmalte); }
 .producto__anadir:active { transform: scale(.96); }
+/* En móvil el botón dice "Añadir"; el resto queda para los lectores de pantalla */
+@media (max-width: 719px) {
+  .producto__anadir-mas {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .producto__anadir { min-height: 2.5rem; padding-inline: .8rem; font-size: .66rem; }
+}
 
 /* Filtro: piezas que se descuelgan y se vuelven a colgar */
 .producto.is-descolgando { animation: descolgar .3s cubic-bezier(.5, 0, .75, 0) forwards; }
@@ -1650,19 +1727,63 @@ html.sin-seleccion, html.sin-seleccion * { -webkit-user-select: none; user-selec
 
 /* 12. Pie ------------------------------------------------------------------- */
 .pie {
+  position: relative;
   padding-block: 3.5rem calc(7rem + env(safe-area-inset-bottom, 0px));
   background: var(--hueso-2);
   border-top: 1px solid var(--linea);
 }
-.pie__grid { display: grid; gap: 2rem; }
+/* La misma franja de azulejos del hero, como remate */
+.pie::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 10px;
+  background:
+    linear-gradient(45deg, transparent 38%, var(--azul) 38% 62%, transparent 62%) 0 0 / 20px 10px,
+    linear-gradient(-45deg, transparent 38%, var(--azul) 38% 62%, transparent 62%) 0 0 / 20px 10px;
+  opacity: .16;
+}
+.pie__grid { display: grid; gap: 2.25rem; }
 .pie__lema { margin-top: .75rem; max-width: 40ch; font-size: .9rem; color: var(--tinta-2); }
+.pie__titulo {
+  display: block;
+  margin-bottom: .9rem;
+  font: 600 .66rem/1 var(--f-texto);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--terracota);
+}
 .pie__nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .pie__nav a { font-size: .9rem; text-decoration: none; color: var(--azul-osc); }
 .pie__nav a:hover { text-decoration: underline; text-underline-offset: .25em; }
 .pie__legal { font-size: .75rem; color: var(--tinta-2); }
+
+.boletin__texto { max-width: 40ch; font-size: .86rem; color: var(--tinta-2); }
+.boletin__fila { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+.boletin__campo {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 3rem;
+  padding: .6rem .85rem;
+  font-size: .9rem;
+  background: var(--esmalte);
+  border: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--linea-fuerte);
+  transition: box-shadow .2s;
+}
+.boletin__campo::placeholder { color: var(--tinta-2); opacity: .7; }
+.boletin__campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--azul); }
+.boletin.is-error .boletin__campo { box-shadow: inset 0 0 0 2px var(--terracota); }
+.boletin__estado:not(:empty) { margin-top: .6rem; font: italic 500 .9rem/1.4 var(--f-display); color: var(--azul); }
+.boletin.is-error .boletin__estado { color: var(--terracota-osc); }
+
 @media (min-width: 760px) {
-  .pie__grid { grid-template-columns: 2fr 1fr; }
+  .pie__grid { grid-template-columns: 1fr 1fr; }
   .pie__legal { grid-column: 1 / -1; padding-top: 1.5rem; border-top: 1px solid var(--linea); }
+}
+@media (min-width: 1080px) {
+  .pie__grid { grid-template-columns: 1.6fr 1fr 1fr 2fr; gap: 3rem; }
 }
 
 /* 13. Caja de madera (carrito) y hojas ---------------------------------------------- */
@@ -1812,7 +1933,23 @@ html.sin-seleccion, html.sin-seleccion * { -webkit-user-select: none; user-selec
   margin-bottom: 1rem;
 }
 .panel-caja__titulo { font: italic 500 1.8rem/1 var(--f-display); color: var(--azul-osc); }
-.panel-caja__vacio { padding: 2rem 0; color: var(--tinta-2); font: italic 500 1.1rem/1.45 var(--f-display); }
+.panel-caja__vacio { padding: 1.5rem 0 1rem; color: var(--tinta-2); font: italic 500 1.1rem/1.45 var(--f-display); }
+.panel-caja__atajos { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.5rem; font-style: normal; }
+
+/* Envío gratis: la barra se llena como el esmalte sobre la ficha */
+.envio { display: grid; gap: .55rem; margin-bottom: .5rem; padding: .85rem .9rem; background: var(--esmalte); border-radius: 2px; box-shadow: inset 0 0 0 1px var(--linea); }
+.envio__texto { font-size: .82rem; line-height: 1.4; color: var(--tinta-2); }
+.envio__texto strong { font-weight: 600; color: var(--azul-osc); }
+.envio__barra { display: block; height: 6px; overflow: hidden; background: var(--hueso-2); border-radius: 1px; }
+.envio__avance {
+  display: block;
+  height: 100%;
+  background: var(--azul);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform .6s var(--ease-out), background-color .3s;
+}
+.envio.is-gratis .envio__avance { background: var(--ocre); }
 .panel-caja__lista { list-style: none; margin: 0; padding: 0; }
 .caja-item {
   display: grid;
@@ -1902,6 +2039,31 @@ html.sin-seleccion, html.sin-seleccion * { -webkit-user-select: none; user-selec
   .detalle__escena { width: min(100%, 300px); }
   .detalle__info { padding: 2.5rem 2.5rem 2.25rem 2.25rem; overflow-y: auto; }
 }
+
+/* Otras piezas del mismo patrón, dentro del detalle */
+.afines { padding-top: 1.1rem; border-top: 1px solid var(--linea); }
+.afines__titulo { margin-bottom: .75rem; font: italic 500 1.05rem/1.2 var(--f-display); color: var(--azul-osc); }
+.afines__lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: .5rem; }
+.afin {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  width: 100%;
+  padding: .5rem .75rem .5rem .5rem;
+  text-align: left;
+  background: var(--esmalte);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  transition: box-shadow .2s, transform .2s var(--ease-out);
+}
+.afin:hover { box-shadow: inset 0 0 0 1px var(--linea-fuerte); transform: translateY(-1px); }
+.afin__ficha { flex: none; width: 38px; height: 38px; transition: transform .5s var(--ease-resorte); }
+.afin:hover .afin__ficha { transform: rotate(8deg) scale(1.06); }
+.afin__ficha svg { width: 100%; height: 100%; }
+.afin__texto { display: grid; gap: .1rem; }
+.afin__nombre { font: 500 .95rem/1.2 var(--f-display); color: var(--azul-osc); }
+.afin__precio { font-size: .76rem; color: var(--tinta-2); font-variant-numeric: tabular-nums; }
+.detalle__nombre:focus { outline: none; }
 
 /* El viaje de la pieza: tres puntos unidos por una línea punteada azul */
 .viaje { padding-top: .25rem; }

@@ -46,6 +46,9 @@
     pulsera: { label: 'Pulsera', medida: '18 cm', price: 490 }
   };
 
+  // Pedido mínimo para envío gratis (MXN). Valor de ejemplo: ajústalo a la política real.
+  TL.envioGratis = 1500;
+
   const BARRO = 'Barro negro y blanco de la región, mezclado y reposado en el taller';
 
   TL.talleres = {

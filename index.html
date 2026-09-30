@@ -197,7 +197,17 @@
           </div>
         </div>
 
-        <p class="catalogo__conteo" data-conteo aria-live="polite">12 piezas</p>
+        <div class="catalogo__barra">
+          <p class="catalogo__conteo" data-conteo aria-live="polite">12 piezas</p>
+          <label class="orden">
+            <span class="orden__label">Ordenar</span>
+            <select data-orden>
+              <option value="destacadas">Destacadas</option>
+              <option value="precio-asc">Precio: menor a mayor</option>
+              <option value="precio-desc">Precio: mayor a menor</option>
+            </select>
+          </label>
+        </div>
         <div class="catalogo__tablero">
           <ul class="catalogo__muro" data-catalogo></ul>
           <p class="catalogo__vacio" data-catalogo-vacio hidden>No hay piezas con ese patrón. Prueba con otro o arma la tuya en el taller.</p>
@@ -647,14 +657,31 @@
         <p class="marca__nombre">engarce</p>
         <p class="pie__lema">Talavera de taller certificado, ensamblada en joyería. La cerámica es de ellos; el diseño y el ensamble, nuestros.</p>
       </div>
-      <nav class="pie__nav" aria-label="Secundaria">
+      <nav class="pie__nav" aria-labelledby="pie-tienda">
+        <p class="pie__titulo" id="pie-tienda">Tienda</p>
         <ul>
           <li><a href="#catalogo">Collares y pulseras</a></li>
           <li><a href="#taller">Taller de combinaciones</a></li>
-          <li><a href="#cuidados">Repuestos de fichas</a></li>
+          <li><a href="#probador">Probador de silueta</a></li>
+        </ul>
+      </nav>
+      <nav class="pie__nav" aria-labelledby="pie-ayuda">
+        <p class="pie__titulo" id="pie-ayuda">Ayuda</p>
+        <ul>
+          <li><a href="#cuidados">Cuidados de la talavera</a></li>
+          <li><a href="#repuesto-titulo">Repuestos de fichas</a></li>
           <li><a href="#ensamble">Cómo lo hacemos</a></li>
         </ul>
       </nav>
+      <form class="boletin" data-boletin novalidate>
+        <label class="pie__titulo" for="boletin-correo">Patrones nuevos</label>
+        <p class="boletin__texto">Te avisamos cuando llegue un lote nuevo de los talleres. Un correo, sin cadena de promociones.</p>
+        <div class="boletin__fila">
+          <input class="boletin__campo" id="boletin-correo" type="email" name="correo" autocomplete="email" placeholder="tu@correo.com" required aria-describedby="boletin-estado">
+          <button class="boton boton--primario" type="submit">Avísame</button>
+        </div>
+        <p class="boletin__estado" id="boletin-estado" data-boletin-estado aria-live="polite"></p>
+      </form>
       <p class="pie__legal">Prototipo de diseño. Los nombres de talleres, lotes y precios son de ejemplo.</p>
     </div>
   </footer>
@@ -689,11 +716,21 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <p class="panel-caja__vacio" data-caja-vacio>Tu caja está vacía. Lo que añadas llega aquí, cada pieza en su compartimento.</p>
+      <div class="panel-caja__vacio" data-caja-vacio>
+        <p>Tu caja está vacía. Lo que añadas llega aquí, cada pieza en su compartimento.</p>
+        <div class="panel-caja__atajos">
+          <a class="boton boton--primario" href="#catalogo" data-caja-ir>Ver el catálogo</a>
+          <a class="boton boton--linea" href="#taller" data-caja-ir>Arma la tuya</a>
+        </div>
+      </div>
+      <div class="envio" data-caja-envio hidden>
+        <p class="envio__texto" data-caja-envio-texto></p>
+        <span class="envio__barra" aria-hidden="true"><span class="envio__avance" data-caja-envio-avance></span></span>
+      </div>
       <ul class="panel-caja__lista" data-caja-lista></ul>
       <div class="panel-caja__pie" data-caja-pie hidden>
         <p class="panel-caja__subtotal"><span>Subtotal</span><strong data-caja-subtotal>$0</strong></p>
-        <p class="panel-caja__nota">El envío se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.</p>
+        <p class="panel-caja__nota" data-caja-nota>El envío se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.</p>
         <button class="boton boton--primario boton--ancho" type="button" data-caja-pagar>Ir a pagar</button>
         <p class="panel-caja__aviso" data-caja-aviso hidden>Este prototipo no cobra. Aquí se conectará la pasarela de pago.</p>
       </div>
@@ -709,11 +746,14 @@
       </button>
       <div class="detalle__visual">
         <div class="detalle__escena" data-detalle-escena></div>
-        <p class="detalle__pista">Pasa el cursor o toca la pieza para ver cómo está armada.</p>
+        <p class="detalle__pista">
+          <span class="solo-puntero">Pasa el cursor sobre la pieza para ver cómo está armada.</span>
+          <span class="solo-tactil">Toca la pieza para ver cómo está armada.</span>
+        </p>
       </div>
       <div class="detalle__info">
         <p class="eyebrow" data-detalle-patron></p>
-        <h2 class="detalle__nombre" id="detalle-nombre" data-detalle-nombre></h2>
+        <h2 class="detalle__nombre" id="detalle-nombre" data-detalle-nombre tabindex="-1"></h2>
         <p class="detalle__precio" data-detalle-precio></p>
         <p class="detalle__desc" data-detalle-desc></p>
         <dl class="detalle__specs" data-detalle-specs></dl>
@@ -729,6 +769,10 @@
           <button class="boton boton--primario" type="button" data-detalle-anadir>Añadir a la caja</button>
           <button class="boton boton--linea" type="button" data-detalle-probar>Probar en silueta</button>
         </div>
+        <section class="afines" data-afines aria-labelledby="afines-titulo">
+          <h3 class="afines__titulo" id="afines-titulo" data-afines-titulo>Del mismo patrón</h3>
+          <ul class="afines__lista" data-afines-lista></ul>
+        </section>
       </div>
     </div>
   </dialog>

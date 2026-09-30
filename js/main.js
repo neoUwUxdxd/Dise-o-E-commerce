@@ -36,10 +36,51 @@
       }, { passive: true });
       revisar();
     }
+
+    // Sección activa: el enlace de la sección que cruza la mitad de la pantalla queda marcado.
+    if (lista && 'IntersectionObserver' in window) {
+      const enlaces = Array.from(lista.querySelectorAll('a[href^="#"]'));
+      const porId = new Map(enlaces.map((a) => [a.getAttribute('href').slice(1), a]));
+      const marcar = (id) => enlaces.forEach((a) => {
+        if (a === porId.get(id)) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+      const io = new IntersectionObserver((entradas) => {
+        entradas.forEach((x) => {
+          if (x.isIntersecting) marcar(x.target.id);
+          else if (porId.get(x.target.id) && porId.get(x.target.id).hasAttribute('aria-current')) marcar(null);
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      porId.forEach((a, id) => {
+        const sec = document.getElementById(id);
+        if (sec) io.observe(sec);
+      });
+    }
+  }
+
+  function iniciarBoletin() {
+    const form = document.querySelector('[data-boletin]');
+    if (!form) return;
+    const campo = form.querySelector('input[type="email"]');
+    const estado = form.querySelector('[data-boletin-estado]');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ok = campo.value.trim() !== '' && campo.checkValidity();
+      form.classList.toggle('is-error', !ok);
+      campo.setAttribute('aria-invalid', String(!ok));
+      if (!ok) {
+        estado.textContent = 'Revisa el correo: parece que le falta algo (por ejemplo, la @).';
+        campo.focus();
+        return;
+      }
+      estado.textContent = 'Gracias. Este prototipo aún no guarda correos: aquí se conectará el boletín.';
+      form.reset();
+    });
   }
 
   const modulos = [
     ['cabecera', iniciarCabecera],
+    ['boletin', iniciarBoletin],
     ['loader', TL.initLoader],
     ['caja', TL.caja && TL.caja.init],
     ['cursor', TL.initCursor],

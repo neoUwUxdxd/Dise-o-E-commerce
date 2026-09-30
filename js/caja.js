@@ -4,7 +4,7 @@
   'use strict';
 
   const estado = { items: [] };
-  let caja, cuenta, dlg, lista, subtotal, vacio, pie, aviso;
+  let caja, cuenta, dlg, lista, subtotal, vacio, pie, aviso, envio, envioTexto, envioAvance, nota;
   let cola = Promise.resolve();
 
   const valido = (it) => it && it.key && TL.design(it.design) && TL.shapes[it.shape] && it.qty > 0;
@@ -45,7 +45,25 @@
         `</div>` +
       `</li>`
     ).join('');
-    subtotal.textContent = TL.precio(estado.items.reduce((s, it) => s + it.precio * it.qty, 0));
+    const suma = estado.items.reduce((s, it) => s + it.precio * it.qty, 0);
+    subtotal.textContent = TL.precio(suma);
+    pintarEnvio(suma, n);
+  }
+
+  /* Barra de envío gratis: cuánto falta para llegar al mínimo. */
+  function pintarEnvio(suma, n) {
+    const meta = TL.envioGratis;
+    if (!envio || !meta) return;
+    envio.hidden = n === 0;
+    const falta = Math.max(0, meta - suma);
+    envio.classList.toggle('is-gratis', falta === 0);
+    envioAvance.style.transform = `scaleX(${TL.clamp(suma / meta, 0, 1).toFixed(3)})`;
+    envioTexto.innerHTML = falta === 0
+      ? '<strong>Tu envío es gratis.</strong> Lo mandamos con guía de rastreo.'
+      : `Te faltan <strong>${TL.precio(falta)}</strong> para el envío gratis.`;
+    nota.textContent = falta === 0
+      ? 'Cada pieza va en caja de madera con tarjeta de cuidados.'
+      : `Envío gratis desde ${TL.precio(meta)}; si no, se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.`;
   }
 
   /* La ficha vuela en arco desde su origen hasta la boca de la caja. */
@@ -150,6 +168,10 @@
       vacio = dlg.querySelector('[data-caja-vacio]');
       pie = dlg.querySelector('[data-caja-pie]');
       aviso = dlg.querySelector('[data-caja-aviso]');
+      envio = dlg.querySelector('[data-caja-envio]');
+      envioTexto = dlg.querySelector('[data-caja-envio-texto]');
+      envioAvance = dlg.querySelector('[data-caja-envio-avance]');
+      nota = dlg.querySelector('[data-caja-nota]');
 
       estado.items = (TL.store.get('caja', []) || []).filter(valido);
 
@@ -160,6 +182,18 @@
       });
       lista.addEventListener('click', alClicLista);
       dlg.querySelector('[data-caja-pagar]').addEventListener('click', () => { aviso.hidden = false; });
+
+      // Atajos de la caja vacía: primero se cierra la hoja (bloquea el scroll) y luego se va a la sección.
+      dlg.addEventListener('click', (e) => {
+        const a = e.target.closest('[data-caja-ir]');
+        if (!a) return;
+        e.preventDefault();
+        const destino = document.querySelector(a.getAttribute('href'));
+        TL.hoja.cerrar(dlg);
+        setTimeout(() => {
+          if (destino) destino.scrollIntoView({ behavior: TL.motion.reduce ? 'auto' : 'smooth', block: 'start' });
+        }, TL.motion.reduce ? 20 : 360);
+      });
 
       pintar();
       actualizarCuenta(false);

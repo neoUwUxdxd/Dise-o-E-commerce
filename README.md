@@ -74,6 +74,11 @@ js/main.js          Arranque: cada módulo se inicia aislado
 | El viaje de la pieza | En el detalle de cada producto: tres puntos unidos por una línea punteada azul que se dibuja: Origen del barro → Taller aliado → Nuestro ensamble. |
 | Ensamblo, luego existo | Infografía en bucle de 4 pasos (recibir, cortar, unir y empacar) con manos, barra de progreso y botón de pausa. |
 | Cuidados y repuestos | Acordeón que explica con honestidad que la talavera puede romperse, y un comprador de "Repuesto de ficha" que muestra la ficha rota junto a la nueva. |
+| Navegación | El enlace de la sección visible queda marcado (`aria-current`): subrayado en escritorio y una ficha terracota en el menú móvil. |
+| Ordenar el catálogo | Destacadas, precio de menor a mayor o de mayor a menor. Las piezas se reordenan en el muro y se vuelven a colgar. El nombre de cada pieza también abre su detalle. |
+| Más del mismo patrón | Al final del detalle de producto, las otras piezas de la misma familia; se abren sin cerrar la hoja. |
+| Envío gratis | La caja muestra cuánto falta para el envío gratis con una barra que se llena (mínimo en `TL.envioGratis`, `js/data.js`). Vacía, ofrece ir al catálogo o al taller. |
+| Boletín | En el pie: aviso de patrones nuevos, con validación del correo. El prototipo no guarda correos. |
 
 El sonido es opcional: se sintetiza al momento (no descarga archivos), solo suena tras un gesto del usuario y se apaga con el botón de la cabecera.
 
@@ -102,6 +107,7 @@ Todo está en `js/data.js`:
 
 - Nombres y ubicación de los **talleres aliados**. Usar el nombre de cada taller solo con su permiso.
 - **Lotes**, medidas y precios.
+- El mínimo para **envío gratis** (`TL.envioGratis`).
 - Descripciones de producto.
 
 También la política de repuestos y roturas en el acordeón de cuidados, y los textos legales del pie.
