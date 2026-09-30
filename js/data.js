@@ -1,6 +1,8 @@
 /* Engarce · datos del catálogo.
    CONTENIDO DE EJEMPLO: talleres, lotes, medidas y precios son marcadores para el prototipo.
-   Sustitúyelos por los datos reales (y usa el nombre de cada taller solo con su permiso). */
+   Sustitúyelos por los datos reales (y usa el nombre de cada taller solo con su permiso).
+   Este archivo también lo carga el servidor de pagos (server/pago.js) para calcular los precios:
+   el total que se cobra nunca sale del navegador. */
 (function (TL) {
   'use strict';
 
@@ -46,8 +48,18 @@
     pulsera: { label: 'Pulsera', medida: '18 cm', price: 490 }
   };
 
-  // Pedido mínimo para envío gratis (MXN). Valor de ejemplo: ajústalo a la política real.
-  TL.envioGratis = 1500;
+  // Envío (MXN). Valores de ejemplo: ajústalos a la política real.
+  TL.envioGratis = 1500;   // pedido mínimo para envío gratis
+  TL.envioCosto = 150;     // costo por debajo de ese mínimo
+  TL.costoEnvio = (subtotal) => (subtotal >= TL.envioGratis ? 0 : TL.envioCosto);
+
+  TL.estados = [
+    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
+    'Ciudad de México', 'Coahuila', 'Colima', 'Durango', 'Estado de México', 'Guanajuato', 'Guerrero',
+    'Hidalgo', 'Jalisco', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla',
+    'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas',
+    'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'
+  ];
 
   const BARRO = 'Barro negro y blanco de la región, mezclado y reposado en el taller';
 
@@ -126,6 +138,36 @@
 
   TL.producto = (id) => TL.products.find((p) => p.id === id);
 
+  /* Precio y nombre de una línea de la caja a partir de su clave:
+       <id de producto>                              pieza del catálogo
+       taller-<base>-<ficha>-<forma>-<metal>         combinación del taller
+       repuesto-<ficha>-<forma>                      ficha de repuesto
+     Devuelve null si la clave no corresponde a nada que se venda. */
+  const propia = (obj, k) => (Object.prototype.hasOwnProperty.call(obj, k) ? obj[k] : null);
+  TL.lineaPedido = (key) => {
+    const p = TL.producto(key);
+    if (p) {
+      return { titulo: p.name, detalle: `${TL.design(p.design).name} · ${TL.metals[p.metal].label}`, precio: p.price };
+    }
+    const partes = String(key).split('-');
+    if (partes[0] === 'taller' && partes.length === 5) {
+      const [, base, ficha, forma, metal] = partes;
+      const b = propia(TL.bases, base), d = TL.design(ficha), f = propia(TL.shapes, forma), m = propia(TL.metals, metal);
+      if (!b || !d || !f || !m) return null;
+      return {
+        titulo: `${b.label} a tu medida`,
+        detalle: `${d.name} · ${f.label} · ${m.label} · ${b.medida}`,
+        precio: b.price + f.price + m.price
+      };
+    }
+    if (partes[0] === 'repuesto' && partes.length === 3) {
+      const d = TL.design(partes[1]), f = propia(TL.shapes, partes[2]);
+      if (!d || !f) return null;
+      return { titulo: 'Repuesto de ficha', detalle: `${d.name} · ${f.label} · incluye aro de cambio`, precio: f.repuesto };
+    }
+    return null;
+  };
+
   TL.viaje = (p) => {
     const t = TL.talleres[p.taller];
     return [
@@ -134,4 +176,4 @@
       { etapa: 'Nuestro ensamble', lugar: 'Banco Engarce', nota: 'Corte, pasador y montaje. Lote ' + p.lote }
     ];
   };
-})(window.TL);
+})(typeof window !== 'undefined' ? window.TL : module.exports);

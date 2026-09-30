@@ -1,0 +1,13 @@
+# Netlify: sitio estático + funciones de pago. Variables en Site settings → Environment variables:
+# MP_ACCESS_TOKEN, MP_WEBHOOK_SECRET y SITIO_URL (ver README).
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

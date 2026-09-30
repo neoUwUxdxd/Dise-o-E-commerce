@@ -36,6 +36,7 @@
   <script defer src="js/probador.js"></script>
   <script defer src="js/ensamble.js"></script>
   <script defer src="js/cuidados.js"></script>
+  <script defer src="js/pago.js"></script>
   <script defer src="js/main.js"></script>
 </head>
 <body>
@@ -682,7 +683,7 @@
         </div>
         <p class="boletin__estado" id="boletin-estado" data-boletin-estado aria-live="polite"></p>
       </form>
-      <p class="pie__legal">Prototipo de diseño. Los nombres de talleres, lotes y precios son de ejemplo.</p>
+      <p class="pie__legal">Prototipo de diseño. Los nombres de talleres, lotes y precios son de ejemplo. Pagos procesados por Mercado Pago.</p>
     </div>
   </footer>
 
@@ -716,6 +717,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </div>
+      <div class="panel-caja__vista" data-vista-caja>
       <div class="panel-caja__vacio" data-caja-vacio>
         <p>Tu caja está vacía. Lo que añadas llega aquí, cada pieza en su compartimento.</p>
         <div class="panel-caja__atajos">
@@ -732,8 +734,87 @@
         <p class="panel-caja__subtotal"><span>Subtotal</span><strong data-caja-subtotal>$0</strong></p>
         <p class="panel-caja__nota" data-caja-nota>El envío se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.</p>
         <button class="boton boton--primario boton--ancho" type="button" data-caja-pagar>Ir a pagar</button>
-        <p class="panel-caja__aviso" data-caja-aviso hidden>Este prototipo no cobra. Aquí se conectará la pasarela de pago.</p>
       </div>
+      </div>
+
+      <!-- Envío y pago: los datos se mandan a /api/crear-pago y el cobro ocurre en Mercado Pago -->
+      <form class="checkout" data-checkout novalidate hidden>
+        <button type="button" class="checkout__volver enlace enlace--suave" data-checkout-volver>Volver a la caja</button>
+
+        <fieldset class="checkout__grupo">
+          <legend class="checkout__titulo">Contacto</legend>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Nombre completo</span>
+            <input id="co-nombre" name="nombre" autocomplete="name" required minlength="3" maxlength="80">
+            <span class="campo__error">Escribe tu nombre y apellido.</span>
+          </label>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Correo</span>
+            <input id="co-correo" name="correo" type="email" autocomplete="email" inputmode="email" required maxlength="120">
+            <span class="campo__error">Revisa el correo; por ejemplo, nombre@correo.com.</span>
+          </label>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Teléfono celular</span>
+            <input id="co-telefono" name="telefono" type="tel" autocomplete="tel-national" inputmode="numeric" required placeholder="10 dígitos" maxlength="14">
+            <span class="campo__error">Escribe los 10 dígitos, sin lada internacional.</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="checkout__grupo">
+          <legend class="checkout__titulo">Dirección de envío</legend>
+          <label class="campo">
+            <span class="campo__label">Código postal</span>
+            <input id="co-cp" name="cp" autocomplete="postal-code" inputmode="numeric" required pattern="[0-9]{5}" maxlength="5">
+            <span class="campo__error">Son 5 dígitos.</span>
+          </label>
+          <label class="campo">
+            <span class="campo__label">Estado</span>
+            <select id="co-estado" name="estado" autocomplete="address-level1" required data-checkout-estados>
+              <option value="">Elige…</option>
+            </select>
+            <span class="campo__error">Elige tu estado.</span>
+          </label>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Ciudad o municipio</span>
+            <input id="co-ciudad" name="ciudad" autocomplete="address-level2" required maxlength="80">
+            <span class="campo__error">Escribe la ciudad o el municipio.</span>
+          </label>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Colonia</span>
+            <input id="co-colonia" name="colonia" autocomplete="address-level3" required maxlength="80">
+            <span class="campo__error">Escribe la colonia.</span>
+          </label>
+          <label class="campo campo--calle">
+            <span class="campo__label">Calle</span>
+            <input id="co-calle" name="calle" autocomplete="address-line1" required maxlength="120">
+            <span class="campo__error">Escribe la calle.</span>
+          </label>
+          <label class="campo campo--numero">
+            <span class="campo__label">Número</span>
+            <input id="co-numero" name="numero" required maxlength="30" placeholder="Ext. / Int.">
+            <span class="campo__error">Falta el número.</span>
+          </label>
+          <label class="campo campo--ancho">
+            <span class="campo__label">Referencias <span class="campo__opcional">(opcional)</span></span>
+            <input id="co-referencias" name="referencias" maxlength="200" placeholder="Entre calles, color de la fachada…">
+          </label>
+        </fieldset>
+
+        <dl class="checkout__cuentas">
+          <div><dt>Subtotal</dt><dd data-checkout-subtotal>$0</dd></div>
+          <div><dt>Envío</dt><dd data-checkout-envio>$0</dd></div>
+          <div class="checkout__total"><dt>Total</dt><dd data-checkout-total>$0</dd></div>
+        </dl>
+
+        <p class="checkout__error" data-checkout-error role="alert" hidden></p>
+        <button class="boton boton--primario boton--ancho checkout__pagar" type="submit" data-checkout-pagar>
+          <span data-checkout-pagar-texto>Pagar con Mercado Pago</span>
+        </button>
+        <p class="checkout__seguro">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span>Pagas en el sitio seguro de Mercado Pago: tarjeta, meses sin intereses, OXXO o transferencia SPEI. Nosotros no vemos los datos de tu tarjeta.</span>
+        </p>
+      </form>
     </div>
   </dialog>
 
@@ -774,6 +855,25 @@
           <ul class="afines__lista" data-afines-lista></ul>
         </section>
       </div>
+    </div>
+  </dialog>
+
+  <!-- Resultado del pago al volver de Mercado Pago -->
+  <dialog class="hoja hoja--centro" data-resultado aria-labelledby="resultado-titulo">
+    <div class="hoja__cuerpo resultado" data-resultado-estado="aprobado">
+      <button class="hoja__cerrar resultado__cerrar" type="button" data-cerrar>
+        <span class="sr-only">Cerrar</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <span class="resultado__sello" aria-hidden="true">
+        <svg class="resultado__icono resultado__icono--aprobado" viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="resultado__icono resultado__icono--pendiente" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4.5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="resultado__icono resultado__icono--rechazado" viewBox="0 0 24 24"><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
+      <p class="eyebrow" data-resultado-folio></p>
+      <h2 class="resultado__titulo" id="resultado-titulo" data-resultado-titulo></h2>
+      <p class="resultado__texto" data-resultado-texto></p>
+      <button class="boton boton--primario" type="button" data-resultado-accion autofocus></button>
     </div>
   </dialog>
 

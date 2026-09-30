@@ -83,6 +83,7 @@
     ['boletin', iniciarBoletin],
     ['loader', TL.initLoader],
     ['caja', TL.caja && TL.caja.init],
+    ['pago', TL.initPago],          // después de la caja: al volver de Mercado Pago la vacía
     ['cursor', TL.initCursor],
     ['hero', TL.initHero],
     ['catalogo', TL.initCatalogo],

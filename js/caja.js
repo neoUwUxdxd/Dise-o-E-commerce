@@ -4,10 +4,10 @@
   'use strict';
 
   const estado = { items: [] };
-  let caja, cuenta, dlg, lista, subtotal, vacio, pie, aviso, envio, envioTexto, envioAvance, nota;
+  let caja, cuenta, dlg, lista, subtotal, vacio, pie, envio, envioTexto, envioAvance, nota;
   let cola = Promise.resolve();
 
-  const valido = (it) => it && it.key && TL.design(it.design) && TL.shapes[it.shape] && it.qty > 0;
+  const valido = (it) => it && it.key && TL.lineaPedido(it.key) && TL.design(it.design) && TL.shapes[it.shape] && it.qty > 0;
   const total = () => estado.items.reduce((n, it) => n + it.qty, 0);
   const guardar = () => TL.store.set('caja', estado.items);
 
@@ -146,7 +146,7 @@
     guardar();
     pintar();
     actualizarCuenta(false);
-    aviso.hidden = true;
+    if (TL.pago) TL.pago.alCambiarCaja();
     if (acc === 'quitar' || it.qty === 0) {
       TL.anunciar(`${it.nombre} salió de tu caja.`);
       const primero = lista.querySelector('button') || dlg.querySelector('[data-cerrar]');
@@ -167,21 +167,22 @@
       subtotal = dlg.querySelector('[data-caja-subtotal]');
       vacio = dlg.querySelector('[data-caja-vacio]');
       pie = dlg.querySelector('[data-caja-pie]');
-      aviso = dlg.querySelector('[data-caja-aviso]');
       envio = dlg.querySelector('[data-caja-envio]');
       envioTexto = dlg.querySelector('[data-caja-envio-texto]');
       envioAvance = dlg.querySelector('[data-caja-envio-avance]');
       nota = dlg.querySelector('[data-caja-nota]');
 
+      // Lo guardado puede venir de una visita anterior: el precio se toma siempre del catálogo actual.
       estado.items = (TL.store.get('caja', []) || []).filter(valido);
+      estado.items.forEach((it) => { it.precio = TL.lineaPedido(it.key).precio; });
 
       caja.addEventListener('click', () => {
         pintar();
-        aviso.hidden = true;
+        if (TL.pago) TL.pago.verCaja();
         TL.hoja.abrir(dlg);
       });
       lista.addEventListener('click', alClicLista);
-      dlg.querySelector('[data-caja-pagar]').addEventListener('click', () => { aviso.hidden = false; });
+      dlg.querySelector('[data-caja-pagar]').addEventListener('click', () => { if (TL.pago) TL.pago.verCheckout(); });
 
       // Atajos de la caja vacía: primero se cierra la hoja (bloquea el scroll) y luego se va a la sección.
       dlg.addEventListener('click', (e) => {
@@ -198,6 +199,14 @@
       pintar();
       actualizarCuenta(false);
     },
-    agregar
+    agregar,
+    // Para el pago: copia de las líneas y vaciado tras un pago.
+    items: () => estado.items.map((it) => ({ ...it })),
+    vaciar() {
+      estado.items = [];
+      guardar();
+      pintar();
+      actualizarCuenta(false);
+    }
   };
 })(window.TL);
