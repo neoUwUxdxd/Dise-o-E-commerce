@@ -30,10 +30,18 @@
 
     if (cab) {
       let pendiente = false;
-      const revisar = () => { pendiente = false; cab.classList.toggle('is-scrolled', window.scrollY > 8); };
+      const raiz = document.documentElement;
+      const revisar = () => {
+        pendiente = false;
+        const y = window.scrollY;
+        cab.classList.toggle('is-scrolled', y > 8);
+        const recorrido = raiz.scrollHeight - innerHeight;
+        cab.style.setProperty('--progreso', recorrido > 0 ? TL.clamp(y / recorrido, 0, 1).toFixed(4) : 0);
+      };
       window.addEventListener('scroll', () => {
         if (!pendiente) { pendiente = true; requestAnimationFrame(revisar); }
       }, { passive: true });
+      window.addEventListener('resize', revisar, { passive: true });
       revisar();
     }
 

@@ -71,9 +71,11 @@ api/                      Adaptadores para Vercel (mismas rutas /api/*)
 | Pedido | Implementación |
 |---|---|
 | Loading screen 1.5 s | Cuadrado de barro que gira, recibe una capa de azul mate y se "cuece" (resplandor de horno, azul brillante, patrón y reflejo). CSS puro: si el JS falla, se retira solo. Se muestra una vez por sesión y se salta con un clic. |
+| Entrada del hero | Al retirarse el loader, cada palabra del título sube desde su renglón (recortada, como una ficha que se asienta), un trazo de pincel ocre se pinta bajo *puesto.*, y luego entran el texto, los botones, el collar y las notas con sus líneas. CSS puro; en visitas siguientes empieza sin esperar al loader. |
 | Cursor personalizado | Punto azul con estela de esquirlas de esmalte que caen y se disipan. Sobre botones y piezas aparece un disco que se hunde; al hacer clic se hunde más. Solo con ratón o trackpad. |
 | Hover explode-view | La ficha se separa del aro y de la cadena en 3D (se adelanta y gira un poco), el aro se abre, y todo vuelve a encajar con rebote elástico. En táctil ocurre cuando la pieza entra en pantalla. |
 | Volteo de baldosas | Cada sección que aún no se ve queda cubierta por baldosas del color de su fondo que se voltean al llegar, en cuatro patrones: diagonal, del centro hacia fuera, damero y filas en zigzag (como quien coloca piso). |
+| Entrada del contenido | Mientras se voltean las baldosas, el encabezado y los bloques de cada sección suben en cascada y el trazo de pincel se pinta bajo la frase en cursiva del título. Solo en las secciones que no se ven al cargar. |
 | Taller de combinaciones | Menú lateral de 12 fichas. La elegida vuela en arco, gira 360° en 3D (por detrás se ve el barro sin esmaltar) y encaja con un pulso y un "clic" cerámico. Base, forma y metal cambian la joya y el precio en vivo. |
 | Probador de silueta | Arrastrar y soltar con ratón. En táctil y teclado es Tap & Select. El collar cae con física de cuerda (Verlet): los extremos se enganchan al cuello, la cadena se descuelga, oscila y se asienta con el peso del dije. La pulsera cae por la mano, rebota en la muñeca y se tambalea. En móvil, cambia sola a la silueta correcta. |
 | Caja de madera | La tapa se abre, la ficha vuela y entra, la tapa se cierra con un golpe de madera y la caja tiembla 1 s. El contador se guarda en `localStorage`. |
@@ -82,7 +84,8 @@ api/                      Adaptadores para Vercel (mismas rutas /api/*)
 | El viaje de la pieza | En el detalle de cada producto: tres puntos unidos por una línea punteada azul que se dibuja: Origen del barro → Taller aliado → Nuestro ensamble. |
 | Ensamblo, luego existo | Infografía en bucle de 4 pasos (recibir, cortar, unir y empacar) con manos, barra de progreso y botón de pausa. |
 | Cuidados y repuestos | Acordeón que explica con honestidad que la talavera puede romperse, y un comprador de "Repuesto de ficha" que muestra la ficha rota junto a la nueva. |
-| Navegación | El enlace de la sección visible queda marcado (`aria-current`): subrayado en escritorio y una ficha terracota en el menú móvil. |
+| Navegación | El enlace de la sección visible queda marcado (`aria-current`): subrayado en escritorio y una ficha terracota en el menú móvil. Bajo la cabecera, una línea azul con punta de ocre marca cuánto se ha recorrido de la página. |
+| Botones | Los botones llenos reciben el mismo reflejo de esmalte del loader al pasar el cursor; en los de línea (y en "Añadir" del catálogo) el azul sube como una capa de esmalte. |
 | Ordenar el catálogo | Destacadas, precio de menor a mayor o de mayor a menor. Las piezas se reordenan en el muro y se vuelven a colgar. El nombre de cada pieza también abre su detalle. |
 | Más del mismo patrón | Al final del detalle de producto, las otras piezas de la misma familia; se abren sin cerrar la hoja. |
 | Envío gratis | La caja muestra cuánto falta para el envío gratis con una barra que se llena (mínimo en `TL.envioGratis`, `js/data.js`). Vacía, ofrece ir al catálogo o al taller. |

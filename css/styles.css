@@ -6,7 +6,8 @@
    2. Base            7. Catálogo colgante   12. Pie
    3. Utilidades      8. Taller              13. Caja de madera + hojas
    4. Cabecera        9. Probador            14. Loader, cursor, textura, reveal
-   5. Hero           10. Ensamble            15. Movimiento reducido
+   5. Hero           10. Ensamble            15. Entradas y trazos
+                                             16. Movimiento reducido
    ========================================================================== */
 
 /* 1. Tokens ---------------------------------------------------------------- */
@@ -187,20 +188,40 @@ legend { padding: 0; }
   text-transform: uppercase;
   text-decoration: none;
   border-radius: 2px;
-  transition: transform .2s var(--ease-out), background-color .2s, color .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s var(--ease-out), background-color .2s, background-size .4s var(--ease-out), color .25s, box-shadow .2s;
 }
 .boton:active { transform: translateY(1px) scale(.98); }
+/* Reflejo de esmalte recién horneado que cruza el botón (el mismo del loader) */
+.boton--primario::before,
+.boton--terracota::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .26) 50%, transparent 62%) no-repeat;
+  background-size: 250% 100%;
+  background-position: 130% 0;
+}
+.boton--primario:hover::before,
+.boton--terracota:hover::before {
+  background-position: -30% 0;
+  transition: background-position .8s var(--ease-out);
+}
 .boton--primario {
   background: var(--azul);
   color: var(--esmalte);
   box-shadow: 0 1px 0 var(--azul-osc), 0 14px 26px -16px rgba(16, 47, 90, .8);
 }
 .boton--primario:hover { background: var(--azul-osc); }
+/* Botón de línea: al pasar, el azul sube como la capa de esmalte */
 .boton--linea {
   color: var(--azul);
+  background: linear-gradient(var(--azul), var(--azul)) no-repeat 50% 100% / 100% 0%;
   box-shadow: inset 0 0 0 1.5px var(--azul);
 }
-.boton--linea:hover { background: rgba(26, 75, 142, .07); }
+.boton--linea:hover { background-size: 100% 100%; color: var(--esmalte); }
 .boton--terracota {
   background: var(--terracota);
   color: var(--esmalte);
@@ -253,9 +274,39 @@ legend { padding: 0; }
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid transparent;
-  transition: border-color .3s;
+  transition: border-color .3s, box-shadow .4s;
 }
-.cabecera.is-scrolled { border-bottom-color: var(--linea); }
+.cabecera.is-scrolled {
+  border-bottom-color: var(--linea);
+  box-shadow: 0 14px 28px -26px rgba(16, 47, 90, .5);
+}
+/* Avance de lectura: una línea de esmalte que se llena bajo la cabecera, con punta de ocre */
+.cabecera__progreso {
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  pointer-events: none;
+}
+.cabecera__progreso::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--azul), var(--azul-brillo));
+  transform: scaleX(var(--progreso, 0));
+  transform-origin: left;
+}
+.cabecera__progreso::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: calc(var(--progreso, 0) * (100% - 10px) + 5px);
+  width: 6px; height: 6px;
+  margin-left: -3px;
+  background: var(--ocre);
+  transform: rotate(45deg) scale(0);
+  transition: transform .3s var(--ease-out);
+}
+.cabecera.is-scrolled .cabecera__progreso::after { transform: rotate(45deg) scale(1); }
 
 .cabecera__barra {
   position: relative;
@@ -598,7 +649,9 @@ legend { padding: 0; }
   color: var(--esmalte);
   box-shadow: none;
 }
-.chip__ficha { width: 28px; height: 28px; flex: none; }
+.chip__ficha { width: 28px; height: 28px; flex: none; transition: transform .6s var(--ease-resorte); }
+.chip:hover .chip__ficha { transform: rotate(-8deg) scale(1.06); }
+.chip[aria-pressed="true"] .chip__ficha { transform: rotate(90deg); }
 .chip__ficha svg { width: 100%; height: 100%; }
 
 @media (min-width: 900px) {
@@ -825,7 +878,8 @@ legend { padding: 0; }
   color: var(--azul);
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px var(--linea-fuerte);
-  transition: background-color .2s, color .2s, transform .2s var(--ease-out);
+  background: linear-gradient(var(--azul), var(--azul)) no-repeat 50% 100% / 100% 0%;
+  transition: background-size .35s var(--ease-out), color .25s, transform .2s var(--ease-out);
 }
 .producto__anadir::before {
   content: "";
@@ -835,7 +889,7 @@ legend { padding: 0; }
     linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat,
     linear-gradient(currentColor, currentColor) center / 1.5px 100% no-repeat;
 }
-.producto__anadir:hover { background: var(--azul); color: var(--esmalte); }
+.producto__anadir:hover { background-size: 100% 100%; color: var(--esmalte); }
 .producto__anadir:active { transform: scale(.96); }
 /* En móvil el botón dice "Añadir"; el resto queda para los lectores de pantalla */
 @media (max-width: 719px) {
@@ -2425,7 +2479,78 @@ html.sin-seleccion, html.sin-seleccion * { -webkit-user-select: none; user-selec
   100% { transform: perspective(700px) rotateX(92deg) scale(.92); opacity: 0; }
 }
 
-/* 15. Movimiento reducido ------------------------------------------------------ */
+/* 15. Entradas y trazos -------------------------------------------------------- */
+/* Retraso de la entrada del hero: espera al loader (1.5 s) solo la primera vez */
+:root { --intro: 1.5s; }
+.sin-intro { --intro: .1s; }
+
+/* Hero: cada palabra sube desde su renglón, como una ficha que se asienta */
+.hero__titulo .palabra {
+  display: inline-block;
+  vertical-align: top;
+  /* Recorte con margen: deja ver descendentes y la cursiva, oculta lo que sube */
+  clip-path: inset(-.3em -.3em -.16em -.3em);
+}
+.hero__titulo .palabra > span {
+  display: inline-block;
+  animation: palabra-sube 1.05s var(--ease-out) calc(var(--intro) + var(--i, 0) * 75ms) both;
+}
+@keyframes palabra-sube {
+  from { transform: translateY(135%) rotate(3deg); }
+}
+
+.hero .eyebrow { animation: sube .8s var(--ease-out) calc(var(--intro) - .05s) both; }
+.hero__sub     { animation: sube .9s var(--ease-out) calc(var(--intro) + .42s) both; }
+.hero__cta     { animation: sube .9s var(--ease-out) calc(var(--intro) + .52s) both; }
+.hero__canvas  { animation: lienzo-entra 1.4s var(--ease-out) calc(var(--intro) + .1s) both; }
+.hero__pista   { animation: sube .8s var(--ease-out) calc(var(--intro) + 1.1s) both; }
+.hero .nota    { animation: sube .7s var(--ease-out) calc(var(--intro) + .8s + var(--n, 0) * 120ms) both; }
+.hero .nota--b { --n: 1; }
+.hero .nota--c { --n: 2; }
+.hero .nota::before {
+  transform-origin: var(--origen, left);
+  animation: linea-traza .7s var(--ease-out) calc(var(--intro) + .95s + var(--n, 0) * 120ms) both;
+}
+.hero .nota--b::before, .hero .nota--c::before { --origen: right; }
+@media (max-width: 899px) { .hero .nota--b::before, .hero .nota--c::before { --origen: left; } }
+
+@keyframes sube { from { opacity: 0; transform: translateY(18px); } }
+@keyframes lienzo-entra { from { opacity: 0; transform: scale(.92) translateY(14px); } }
+@keyframes linea-traza { from { transform: scaleX(0); } }
+
+/* Trazo de pincel bajo la frase en cursiva: se pinta a mano, como la talavera */
+.hero__titulo em,
+.titulo-2 em {
+  --trazo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10.5C34 6.2 78 4.4 122 4.6C150 4.7 176 5.6 198 3.2C199.5 3 199.8 4.6 198.4 5.2C174 9.4 146 8.6 118 8.8C80 9 42 10.6 5 13C1.6 13.2.4 11 2 10.5Z' fill='%23D39A2E'/%3E%3C/svg%3E");
+  background: var(--trazo) no-repeat 0 94% / 100% .2em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.hero__titulo em {
+  background-size: 100% .16em;
+  background-position: .08em 96%;
+  animation: trazo 1s cubic-bezier(.6, 0, .2, 1) calc(var(--intro) + .75s) both;
+}
+@keyframes trazo { from { background-size: 0% .16em; } }
+
+/* Secciones: el contenido sube en cascada mientras se voltean las baldosas.
+   Solo aplica a las secciones que reveal.js marca (las que aún no se ven al cargar). */
+.por-entrar .titulo-2 em { background-size: 0% .2em; }
+.por-entrar.is-dentro .titulo-2 em {
+  background-size: 100% .2em;
+  transition: background-size 1s cubic-bezier(.6, 0, .2, 1) .75s;
+}
+.por-entrar:not(.is-dentro) [data-entra] { opacity: 0; }
+.por-entrar.is-dentro [data-entra] {
+  animation: sube .9s var(--ease-out) calc(.28s + var(--e, 0) * 90ms) backwards;
+}
+
+@media print {
+  .por-entrar [data-entra] { opacity: 1 !important; animation: none !important; }
+  .por-entrar .titulo-2 em { background-size: 100% .2em; }
+}
+
+/* 16. Movimiento reducido ------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .loader { display: none; }

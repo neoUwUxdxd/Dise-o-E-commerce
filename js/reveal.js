@@ -9,6 +9,22 @@
   const DURACION = 620;
   const MAX_RETRASO = 900;
 
+  // Lo que sube en cascada detrás de las baldosas (en orden de documento).
+  const ENTRAN = [
+    '.seccion__cabeza > *', '.quien__item', '.filtros', '.catalogo__barra',
+    '.taller__menu', '.bandeja', '.division__col', '.video',
+    '.acordeon__item', '.repuesto'
+  ].join(', ');
+  const MAX_CASCADA = 8;
+
+  function prepararEntrada(sec) {
+    TL.$$(ENTRAN, sec).forEach((el, i) => {
+      el.setAttribute('data-entra', '');
+      el.style.setProperty('--e', Math.min(i, MAX_CASCADA));
+    });
+    sec.classList.add('por-entrar');
+  }
+
   const patrones = {
     diagonal: (c, r) => c + r,
     centro: (c, r, cols, rows) => Math.max(Math.abs(c - (cols - 1) / 2), Math.abs(r - (rows - 1) / 2)),
@@ -79,6 +95,7 @@
       entradas.forEach((en) => {
         if (!en.isIntersecting) return;
         io.unobserve(en.target);
+        en.target.classList.add('is-dentro');
         const capa = capas.get(en.target);
         if (!capa) return;
         capa.classList.add('is-volteando');
@@ -89,11 +106,15 @@
     secciones.forEach((sec) => {
       const r = sec.getBoundingClientRect();
       if (r.top < innerHeight * 0.92) return; // ya visible al cargar
+      prepararEntrada(sec);
       capas.set(sec, cubrir(sec));
       io.observe(sec);
     });
 
     // Si alguien salta con un ancla lejos (o imprime), no dejar nada cubierto.
-    window.addEventListener('beforeprint', () => capas.forEach((c) => c.remove()));
+    window.addEventListener('beforeprint', () => {
+      capas.forEach((c) => c.remove());
+      capas.forEach((c, sec) => sec.classList.add('is-dentro'));
+    });
   };
 })(window.TL);
