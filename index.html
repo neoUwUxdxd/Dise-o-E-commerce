@@ -1,886 +1,1009 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Engarce Talavera</title>
-  <meta name="description" content="Pulseras y collares con talavera de talleres certificados de Puebla y Tlaxcala. No hacemos la talavera: la diseñamos y la ensamblamos en joyería.">
-  <meta name="theme-color" content="#F4EEE3">
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap">
-  <link rel="stylesheet" href="css/styles.css">
-  <script>
-    /* Antes de pintar: marca JS activo y muestra la intro solo una vez por sesión. */
-    (function (d) {
-      d.classList.add('js');
-      try {
-        if (sessionStorage.getItem('engarce:intro')) d.classList.add('sin-intro');
-        else sessionStorage.setItem('engarce:intro', '1');
-      } catch (e) {}
-    })(document.documentElement);
-  </script>
-  <script defer src="js/core.js"></script>
-  <script defer src="js/data.js"></script>
-  <script defer src="js/talavera.js"></script>
-  <script defer src="js/sonido.js"></script>
-  <script defer src="js/piezas.js"></script>
-  <script defer src="js/caja.js"></script>
-  <script defer src="js/loader.js"></script>
-  <script defer src="js/cursor.js"></script>
-  <script defer src="js/reveal.js"></script>
-  <script defer src="js/hero3d.js"></script>
-  <script defer src="js/catalogo.js"></script>
-  <script defer src="js/taller.js"></script>
-  <script defer src="js/probador.js"></script>
-  <script defer src="js/ensamble.js"></script>
-  <script defer src="js/cuidados.js"></script>
-  <script defer src="js/pago.js"></script>
-  <script defer src="js/main.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lo Que Cuento</title>
+<meta name="description" content="Un cuaderno privado para contar todo: una página por día, con renglones, clima del ánimo y etiquetas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500&family=Young+Serif&display=swap">
+<style>
+/* Concepto: un cuaderno de renglones sobre la mesa. A la izquierda el índice (calendario del mes y
+   páginas escritas); a la derecha la hoja abierta, con margen rosa y renglones azules que siguen al texto.
+   Tinta azul-negra de pluma; de noche, la hoja se vuelve azul profundo. */
+:root {
+  --mesa: #ECEDE7;          /* fondo: la mesa */
+  --hoja: #FBFBF7;          /* la página */
+  --tinta: #24234B;         /* tinta azul-negra */
+  --tinta-2: #5E6079;       /* texto secundario */
+  --acento: #3B3CA6;        /* botones y foco */
+  --sobre-acento: #FBFBF7;
+  --renglon: rgba(64, 104, 170, .2);
+  --margen: #D9616F;        /* línea del margen */
+  --linea: rgba(36, 35, 75, .12);
+  --sombra: 0 1px 0 rgba(36, 35, 75, .06), 0 24px 48px -28px rgba(36, 35, 75, .35);
+  --c1: #D99A12;  /* despejado */
+  --c2: #5E9A5A;  /* templado */
+  --c3: #8A92A8;  /* nublado */
+  --c4: #3E76C0;  /* lluvia */
+  --c5: #7553B6;  /* tormenta */
+
+  --f-titulo: "Young Serif", "Iowan Old Style", Georgia, serif;
+  --f-texto: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --f-dato: "Spline Sans Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --r: 2rem;                /* alto de un renglón */
+  --gutter: 1rem;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --mesa: #0F1122; --hoja: #171A30; --tinta: #E9E7F3; --tinta-2: #A2A4C0;
+    --acento: #A3A4F7; --sobre-acento: #12142A;
+    --renglon: rgba(140, 170, 235, .14); --margen: #E07A88; --linea: rgba(233, 231, 243, .1);
+    --sombra: 0 1px 0 rgba(0, 0, 0, .3), 0 28px 56px -30px rgba(0, 0, 0, .8);
+    --c1: #F0BE4A; --c2: #8CC488; --c3: #AAB1C6; --c4: #72A3E8; --c5: #A88AE8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --mesa: #0F1122; --hoja: #171A30; --tinta: #E9E7F3; --tinta-2: #A2A4C0;
+  --acento: #A3A4F7; --sobre-acento: #12142A;
+  --renglon: rgba(140, 170, 235, .14); --margen: #E07A88; --linea: rgba(233, 231, 243, .1);
+  --sombra: 0 1px 0 rgba(0, 0, 0, .3), 0 28px 56px -30px rgba(0, 0, 0, .8);
+  --c1: #F0BE4A; --c2: #8CC488; --c3: #AAB1C6; --c4: #72A3E8; --c5: #A88AE8;
+  color-scheme: dark;
+}
+@media (min-width: 720px) { :root { --gutter: 1.5rem; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--mesa);
+  color: var(--tinta);
+  font: 400 1.0625rem/1.55 var(--f-texto);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+p, h1, h2, h3, ol, ul { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.dato {
+  font: 500 .7rem/1.3 var(--f-dato);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Barra superior ------------------------------------------------------ */
+.barra {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: color-mix(in srgb, var(--mesa) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--linea);
+}
+.barra__fila {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: .75rem var(--gutter);
+}
+.marca { display: flex; align-items: baseline; gap: .6rem; min-width: 0; }
+.marca__nombre { font: 400 1.45rem/1 var(--f-titulo); letter-spacing: -.01em; white-space: nowrap; }
+.marca__nombre i { font-family: var(--f-texto); font-style: italic; font-weight: 400; color: var(--margen); }
+.marca .dato { display: none; }
+@media (min-width: 720px) { .marca .dato { display: inline; } }
+.barra__estado { margin-left: auto; display: flex; align-items: center; gap: .45rem; min-width: 0; }
+.barra__estado .dato { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: .02em; }
+.punto { width: .5rem; height: .5rem; flex: none; border-radius: 50%; background: var(--c2); transition: background-color .3s; }
+.punto[data-estado="guardando"] { background: var(--c1); }
+.punto[data-estado="error"] { background: var(--margen); }
+.punto[data-estado="espera"] { background: var(--c3); }
+@media (max-width: 559px) { .barra__estado .dato { display: none; } }
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  padding: .5rem 1rem;
+  font: 500 .78rem/1 var(--f-dato);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background-color .2s, color .2s, transform .15s;
+}
+.boton:active { transform: scale(.97); }
+.boton--tinta { background: var(--acento); color: var(--sobre-acento); }
+.boton--tinta:hover { background: var(--tinta); }
+.boton--suave { color: var(--tinta-2); box-shadow: inset 0 0 0 1px var(--linea); }
+.boton--suave:hover { color: var(--tinta); background: var(--linea); }
+.boton svg { width: 16px; height: 16px; }
+
+/* ---- Mesa: índice + hoja --------------------------------------------------- */
+.mesa {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 1.25rem var(--gutter) 3rem;
+}
+@media (min-width: 900px) {
+  .mesa { grid-template-columns: minmax(0, 330px) minmax(0, 1fr); gap: 2.5rem; align-items: start; padding-top: 2rem; }
+  .indice { position: sticky; top: calc(4.5rem + env(safe-area-inset-top, 0px)); max-height: calc(100dvh - 5.5rem); overflow-y: auto; scrollbar-width: thin; padding-right: .25rem; }
+}
+@media (max-width: 899px) {
+  body[data-vista="hoja"] .indice { display: none; }
+  body[data-vista="indice"] .escritorio { display: none; }
+}
+
+/* ---- Índice --------------------------------------------------------------- */
+.indice { display: grid; gap: 1.5rem; align-content: start; min-width: 0; }
+
+.mes { display: grid; gap: .75rem; }
+.mes__cabeza { display: flex; align-items: center; justify-content: space-between; }
+.mes__nombre { font: 400 1.2rem/1 var(--f-titulo); }
+.mes__flechas { display: flex; gap: .25rem; }
+.icono-boton {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  color: var(--tinta-2);
+  transition: background-color .2s, color .2s;
+}
+.icono-boton:hover { background: var(--linea); color: var(--tinta); }
+.icono-boton svg { width: 18px; height: 18px; }
+.mes__dias {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: .2rem;
+  text-align: center;
+}
+.mes__dias .dato { padding-bottom: .25rem; font-size: .62rem; }
+.dia {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-width: 100%;
+  font: 400 .78rem/1 var(--f-dato);
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta-2);
+  border-radius: 50%;
+  transition: background-color .2s, color .2s;
+}
+.dia:hover { background: var(--linea); color: var(--tinta); }
+.dia.is-futuro { opacity: .35; pointer-events: none; }
+.dia.is-hoy { color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--tinta); }
+.dia.is-abierto { background: var(--tinta); color: var(--hoja); }
+/* Una gota de tinta del color del ánimo bajo el número */
+.dia.tiene::after {
+  content: "";
+  position: absolute;
+  bottom: 12%;
+  width: .32rem;
+  height: .32rem;
+  border-radius: 50%;
+  background: var(--clima, var(--tinta));
+}
+.dia.tiene { color: var(--tinta); font-weight: 500; }
+
+.cifras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding-block: .75rem; border-block: 1px solid var(--linea); }
+.cifra { display: grid; gap: .15rem; }
+.cifra__valor { font: 400 1.35rem/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
+
+.buscar { position: relative; }
+.buscar svg { position: absolute; left: .85rem; top: 50%; width: 16px; height: 16px; translate: 0 -50%; color: var(--tinta-2); pointer-events: none; }
+.buscar input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: .5rem .9rem .5rem 2.4rem;
+  font-size: 1rem;
+  background: var(--hoja);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--linea);
+}
+.buscar input::placeholder { color: var(--tinta-2); opacity: .8; }
+.buscar input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--acento); }
+
+.etiquetas { display: flex; flex-wrap: wrap; gap: .35rem; }
+.etiqueta {
+  min-height: 1.9rem;
+  padding: .3rem .7rem;
+  font: 400 .74rem/1 var(--f-dato);
+  color: var(--tinta-2);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  transition: background-color .2s, color .2s;
+}
+.etiqueta:hover { color: var(--tinta); }
+.etiqueta[aria-pressed="true"] { background: var(--tinta); color: var(--hoja); box-shadow: none; }
+
+.paginas { display: grid; gap: 1.25rem; }
+.paginas__mes { display: grid; gap: .25rem; }
+.paginas__mes > .dato { padding-bottom: .35rem; }
+.pagina-item {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: .75rem;
+  width: 100%;
+  padding: .7rem .75rem .7rem .5rem;
+  text-align: left;
+  border-radius: 10px;
+  transition: background-color .2s;
+}
+.pagina-item:hover { background: color-mix(in srgb, var(--hoja) 70%, transparent); }
+.pagina-item[aria-current="true"] { background: var(--hoja); box-shadow: var(--sombra); }
+.pagina-item__fecha { display: grid; justify-items: center; align-content: start; gap: .2rem; }
+.pagina-item__dia { font: 400 1.5rem/1 var(--f-titulo); font-variant-numeric: tabular-nums; }
+.pagina-item__semana { font-size: .58rem; }
+.pagina-item__texto { display: grid; gap: .15rem; min-width: 0; }
+.pagina-item__titulo { display: flex; align-items: center; gap: .45rem; font: 500 1rem/1.3 var(--f-texto); }
+.pagina-item__titulo span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pagina-item__titulo i { flex: none; width: .45rem; height: .45rem; border-radius: 50%; background: var(--clima, transparent); }
+.pagina-item__extracto {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: .9rem;
+  line-height: 1.4;
+  color: var(--tinta-2);
+}
+.paginas__vacio { font-style: italic; color: var(--tinta-2); }
+
+/* ---- Hoja abierta ------------------------------------------------------- */
+.escritorio { display: grid; gap: .9rem; min-width: 0; }
+.herramientas { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; }
+.volver { margin-right: auto; }
+@media (min-width: 900px) { .volver { display: none; } }
+
+.fecha {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  padding: .45rem .95rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  cursor: pointer;
+}
+.fecha:hover { background: var(--linea); }
+.fecha:focus-within { box-shadow: inset 0 0 0 2px var(--acento); }
+.fecha__texto { font: 400 .95rem/1 var(--f-texto); font-style: italic; }
+.fecha input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.fecha svg { width: 16px; height: 16px; color: var(--tinta-2); }
+
+.climas { display: flex; gap: .2rem; padding: .2rem; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--linea); }
+.clima {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  color: var(--tinta-2);
+  border-radius: 50%;
+  transition: background-color .2s, color .2s, transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+.clima svg { width: 20px; height: 20px; }
+.clima:hover { color: var(--c); transform: translateY(-1px); }
+.clima[aria-pressed="true"] { color: var(--hoja); background: var(--c); }
+.herramientas__fin { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+@media (max-width: 899px) { .herramientas__fin { margin-left: 0; } }
+
+/* El papel: margen rosa y renglones que avanzan con el texto */
+.papel {
+  position: relative;
+  min-width: 0;
+  padding: var(--r) clamp(1rem, 4vw, 3rem) calc(var(--r) * 2) calc(clamp(1rem, 4vw, 3rem) + 2.25rem);
+  background-color: var(--hoja);
+  background-image: linear-gradient(to bottom, transparent calc(var(--r) - 1px), var(--renglon) calc(var(--r) - 1px), var(--renglon) var(--r));
+  background-size: 100% var(--r);
+  background-position: 0 .35rem;
+  border-radius: 4px 14px 14px 4px;
+  box-shadow: var(--sombra);
+}
+.papel::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: calc(clamp(1rem, 4vw, 3rem) + .9rem);
+  width: 1.5px;
+  background: var(--margen);
+  opacity: .7;
+}
+.papel__titulo,
+.papel__cuerpo {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  resize: none;
+  color: var(--tinta);
+}
+.papel__titulo:focus,
+.papel__cuerpo:focus { outline: none; }
+.papel__titulo {
+  height: calc(var(--r) * 2);
+  font: 400 clamp(1.5rem, 1.2rem + 1.2vw, 2rem)/calc(var(--r) * 2) var(--f-titulo);
+  letter-spacing: -.01em;
+}
+.papel__cuerpo {
+  min-height: calc(var(--r) * 14);
+  overflow: hidden;
+  font: 400 1.15rem/var(--r) var(--f-texto);
+  font-optical-sizing: auto;
+  caret-color: var(--margen);
+}
+.papel__titulo::placeholder,
+.papel__cuerpo::placeholder { color: var(--tinta-2); opacity: .55; }
+.papel__cuerpo::placeholder { font-style: italic; }
+
+.idea { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .75rem; padding-inline: .25rem; }
+.idea p { font-style: italic; color: var(--tinta-2); }
+.idea .enlace { font: 500 .7rem/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--acento); text-decoration: underline; text-underline-offset: .3em; padding-block: .3rem; }
+
+.pie-hoja { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; padding-inline: .25rem; }
+.pie-hoja__etiquetas { display: flex; flex-wrap: wrap; gap: .4rem; }
+.pie-hoja__etiquetas span { color: var(--acento); }
+
+.confirmar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.confirmar p { font-style: italic; }
+.boton--peligro { background: var(--margen); color: var(--hoja); }
+
+.aviso {
+  padding: .7rem 1rem;
+  font-size: .95rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--margen) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--margen);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
 </head>
-<body>
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
-
-  <!-- Pantalla de carga: barro crudo → capa de esmalte azul → cocción -->
-  <div class="loader" data-loader aria-hidden="true">
-    <div class="loader__escena">
-      <div class="loader__ficha">
-        <span class="loader__capa"></span>
-        <svg class="loader__patron" viewBox="0 0 100 100">
-          <g fill="#FBF7EE">
-            <path d="M50 14C58 28 58 40 50 50C42 40 42 28 50 14Z"/>
-            <path d="M86 50C72 58 60 58 50 50C60 42 72 42 86 50Z"/>
-            <path d="M50 86C42 72 42 60 50 50C58 60 58 72 50 86Z"/>
-            <path d="M14 50C28 42 40 42 50 50C40 58 28 58 14 50Z"/>
-          </g>
-          <circle cx="50" cy="50" r="6" fill="#D39A2E"/>
-          <g fill="#FBF7EE"><circle cx="10" cy="10" r="4"/><circle cx="90" cy="10" r="4"/><circle cx="10" cy="90" r="4"/><circle cx="90" cy="90" r="4"/></g>
-        </svg>
-        <span class="loader__brillo"></span>
-      </div>
+<body data-vista="hoja">
+<header class="barra">
+  <div class="barra__fila">
+    <div class="marca">
+      <h1 class="marca__nombre">Lo que <i>cuento</i></h1>
+      <span class="dato">cuaderno privado</span>
     </div>
-    <ol class="loader__pasos">
-      <li>Barro</li>
-      <li>Esmalte</li>
-      <li>Horno</li>
-    </ol>
+    <div class="barra__estado" role="status" aria-live="polite">
+      <span class="punto" data-punto data-estado="espera"></span>
+      <span class="dato" data-estado-texto>Abriendo tu cuaderno…</span>
+    </div>
+    <button class="boton boton--tinta" type="button" data-nueva>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nueva página
+    </button>
   </div>
+</header>
 
-  <div class="textura" aria-hidden="true"></div>
+<div class="mesa">
+  <aside class="indice" aria-label="Índice del cuaderno">
+    <section class="mes" aria-labelledby="mes-nombre">
+      <div class="mes__cabeza">
+        <h2 class="mes__nombre" id="mes-nombre" data-mes-nombre></h2>
+        <div class="mes__flechas">
+          <button class="icono-boton" type="button" data-mes="-1"><span class="sr-only">Mes anterior</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="icono-boton" type="button" data-mes="1"><span class="sr-only">Mes siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+      <div class="mes__dias" data-dias></div>
+    </section>
 
-  <header class="cabecera" data-cabecera>
-    <div class="contenedor cabecera__barra">
-      <a class="marca" href="#inicio" aria-label="Engarce, volver al inicio">
-        <svg class="marca__ficha" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="1" y="1" width="22" height="22" rx="2" fill="#1A4B8E"/>
-          <path d="M12 3.5C14.2 7 14.2 9.6 12 12C9.8 9.6 9.8 7 12 3.5ZM20.5 12C17 14.2 14.4 14.2 12 12C14.4 9.8 17 9.8 20.5 12ZM12 20.5C9.8 17 9.8 14.4 12 12C14.2 14.4 14.2 17 12 20.5ZM3.5 12C7 9.8 9.6 9.8 12 12C9.6 14.2 7 14.2 3.5 12Z" fill="#FBF7EE"/>
-          <circle cx="12" cy="12" r="1.6" fill="#D39A2E"/>
-        </svg>
-        <span class="marca__nombre">engarce</span>
-      </a>
+    <div class="cifras">
+      <p class="cifra"><span class="cifra__valor" data-cifra="paginas">0</span><span class="dato">páginas</span></p>
+      <p class="cifra"><span class="cifra__valor" data-cifra="racha">0</span><span class="dato">días seguidos</span></p>
+      <p class="cifra"><span class="cifra__valor" data-cifra="palabras">0</span><span class="dato">palabras</span></p>
+    </div>
 
-      <nav class="nav" aria-label="Principal">
-        <ul class="nav__lista" id="nav-lista" data-nav-lista>
-          <li><a href="#catalogo">Catálogo</a></li>
-          <li><a href="#taller">Taller</a></li>
-          <li><a href="#probador">Probador</a></li>
-          <li><a href="#ensamble">Cómo lo hacemos</a></li>
-          <li><a href="#cuidados">Cuidados</a></li>
-        </ul>
-      </nav>
+    <label class="buscar">
+      <span class="sr-only">Buscar en tus páginas</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <input id="buscar" type="search" placeholder="Buscar en tus páginas" autocomplete="off" data-buscar>
+    </label>
+    <div class="etiquetas" data-etiquetas role="group" aria-label="Filtrar por etiqueta"></div>
 
-      <div class="cabecera__acciones">
-        <button class="boton-icono" type="button" data-sonido aria-pressed="true">
-          <span class="sr-only">Sonido de las interacciones</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" fill-opacity=".12"/>
-            <path class="onda" d="M15.5 9a4.2 4.2 0 0 1 0 6"/>
-            <path class="onda" d="M18 6.5a7.8 7.8 0 0 1 0 11"/>
-            <path class="mudo" d="M16 9.5l5 5M21 9.5l-5 5"/>
-          </svg>
-        </button>
-        <button class="boton-icono nav__abrir" type="button" data-menu aria-expanded="false" aria-controls="nav-lista">
-          <span class="sr-only">Menú</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-            <path class="menu-linea menu-linea--1" d="M4 8h16"/>
-            <path class="menu-linea menu-linea--2" d="M4 16h16"/>
-          </svg>
-        </button>
+    <nav class="paginas" data-paginas aria-label="Páginas escritas"></nav>
+  </aside>
+
+  <main class="escritorio">
+    <div class="herramientas">
+      <button class="boton boton--suave volver" type="button" data-ver-indice>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Índice
+      </button>
+      <label class="fecha">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 10h16M9 3.5v4M15 3.5v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="fecha__texto" data-fecha-texto></span>
+        <span class="sr-only">Cambiar la fecha de la página</span>
+        <input id="fecha" type="date" data-fecha>
+      </label>
+      <div class="climas" role="group" aria-label="¿Cómo estuvo tu día?" data-climas></div>
+      <div class="herramientas__fin">
+        <button class="boton boton--suave" type="button" data-borrar>Borrar</button>
       </div>
     </div>
-  </header>
 
-  <main id="contenido">
+    <div class="confirmar aviso" data-confirmar hidden>
+      <p>¿Borrar esta página? No se puede deshacer.</p>
+      <button class="boton boton--peligro" type="button" data-borrar-si>Sí, borrar</button>
+      <button class="boton boton--suave" type="button" data-borrar-no>Cancelar</button>
+    </div>
+    <p class="aviso" data-aviso hidden></p>
 
-    <!-- ============ HERO ============ -->
-    <section class="hero" id="inicio" aria-labelledby="hero-titulo">
-      <div class="contenedor hero__grid">
-        <div class="hero__texto">
-          <p class="eyebrow">Joyería ensamblada · Talavera de taller certificado</p>
-          <h1 class="hero__titulo" id="hero-titulo">Talavera que se lleva <em>puesto.</em></h1>
-          <p class="hero__sub">Tomamos la cerámica más bella de México y la ensamblamos para que la luzcas todos los días.</p>
-          <div class="hero__cta">
-            <a class="boton boton--primario" href="#catalogo">Ver el catálogo</a>
-            <a class="boton boton--linea" href="#taller">Arma la tuya</a>
-          </div>
-        </div>
+    <article class="papel">
+      <label class="sr-only" for="titulo">Título</label>
+      <input class="papel__titulo" id="titulo" type="text" maxlength="140" placeholder="Sin título" autocomplete="off" data-titulo>
+      <label class="sr-only" for="cuerpo">Lo que quieras contar</label>
+      <textarea class="papel__cuerpo" id="cuerpo" spellcheck="true" data-cuerpo></textarea>
+    </article>
 
-        <figure class="hero__visual">
-          <canvas class="hero__canvas" data-hero-canvas role="img" aria-label="Collar con cinco fichas de talavera que gira en 3D y sigue el movimiento del cursor"></canvas>
-          <figcaption class="hero__notas">
-            <span class="nota nota--a">Ficha central · Flor de Cholula · 2.6 × 1.8 cm</span>
-            <span class="nota nota--b">Cadena · Chapa de oro 14k · 45 cm</span>
-            <span class="nota nota--c">Reverso sin esmalte: el barro del taller</span>
-          </figcaption>
-          <p class="hero__pista">
-            <span class="solo-puntero">Mueve el cursor: el collar te sigue</span>
-            <span class="solo-tactil">Desliza sobre el collar para girarlo</span>
-          </p>
-        </figure>
-      </div>
-    </section>
+    <div class="idea" data-idea>
+      <p data-idea-texto></p>
+      <button class="enlace" type="button" data-otra-idea>Otra idea</button>
+    </div>
 
-    <!-- ============ QUIÉN HACE QUÉ ============ -->
-    <section class="quien" aria-labelledby="quien-titulo" data-reveal="filas">
-      <div class="contenedor">
-        <h2 class="sr-only" id="quien-titulo">Quién hace qué</h2>
-        <ul class="quien__lista">
-          <li class="quien__item">
-            <span class="quien__quien">Lo hace el taller aliado</span>
-            <p class="quien__rol">La talavera</p>
-            <p>Maestros artesanos de Puebla y Tlaxcala preparan el barro, pintan a mano y hornean dos veces. Cada taller tiene certificado de Denominación de Origen.</p>
-          </li>
-          <li class="quien__item">
-            <span class="quien__quien">Lo hacemos nosotros</span>
-            <p class="quien__rol">El diseño y el ensamble</p>
-            <p>Elegimos cada ficha, la cortamos, le ponemos pasador y la montamos en plata, chapa de oro o hilo encerado.</p>
-          </li>
-          <li class="quien__item">
-            <span class="quien__quien">Si se rompe</span>
-            <p class="quien__rol">Hay repuesto</p>
-            <p>Es cerámica y puede pasar. Vendemos fichas sueltas de cada patrón para que tu pieza siga viva.</p>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ============ CATÁLOGO COLGANTE ============ -->
-    <section class="seccion catalogo" id="catalogo" aria-labelledby="catalogo-titulo" data-reveal="diagonal">
-      <div class="contenedor">
-        <header class="seccion__cabeza">
-          <p class="eyebrow">Catálogo colgante</p>
-          <h2 class="titulo-2" id="catalogo-titulo">Cada pieza, <em>en su gancho.</em></h2>
-          <p class="lede">
-            <span class="solo-puntero">Pasa el cursor sobre una pieza para ver cómo está armada: la ficha se separa del pasador y vuelve a su lugar.</span>
-            <span class="solo-tactil">Desliza por el muro: cada pieza se desarma un instante para mostrarte cómo está hecha. Tócala para ver su historia.</span>
-          </p>
-        </header>
-
-        <div class="filtros">
-          <div class="filtros__grupo">
-            <span class="filtros__label" id="filtro-patron">Patrón de Talavera</span>
-            <div class="filtros__chips" role="group" aria-labelledby="filtro-patron" data-filtro="patron">
-              <button class="chip" type="button" data-valor="todos" aria-pressed="true">Todos</button>
-              <button class="chip" type="button" data-valor="floral" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="cholula"></span>Floral</button>
-              <button class="chip" type="button" data-valor="geometrico" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="estrella"></span>Geométrico</button>
-              <button class="chip" type="button" data-valor="poblano" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="poblano"></span>Clásico Poblano</button>
-              <button class="chip" type="button" data-valor="moderno" aria-pressed="false"><span class="chip__ficha" data-chip-ficha="arco"></span>Moderno</button>
-            </div>
-          </div>
-          <div class="filtros__grupo filtros__grupo--tipo">
-            <span class="filtros__label" id="filtro-tipo">Pieza</span>
-            <div class="segmentado" role="group" aria-labelledby="filtro-tipo" data-filtro="tipo">
-              <button type="button" class="segmentado__op" data-valor="todos" aria-pressed="true">Todo</button>
-              <button type="button" class="segmentado__op" data-valor="collar" aria-pressed="false">Collares</button>
-              <button type="button" class="segmentado__op" data-valor="pulsera" aria-pressed="false">Pulseras</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="catalogo__barra">
-          <p class="catalogo__conteo" data-conteo aria-live="polite">12 piezas</p>
-          <label class="orden">
-            <span class="orden__label">Ordenar</span>
-            <select data-orden>
-              <option value="destacadas">Destacadas</option>
-              <option value="precio-asc">Precio: menor a mayor</option>
-              <option value="precio-desc">Precio: mayor a menor</option>
-            </select>
-          </label>
-        </div>
-        <div class="catalogo__tablero">
-          <ul class="catalogo__muro" data-catalogo></ul>
-          <p class="catalogo__vacio" data-catalogo-vacio hidden>No hay piezas con ese patrón. Prueba con otro o arma la tuya en el taller.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ TALLER DE COMBINACIONES ============ -->
-    <section class="seccion taller" id="taller" aria-labelledby="taller-titulo" data-reveal="centro">
-      <div class="contenedor">
-        <header class="seccion__cabeza">
-          <p class="eyebrow">Taller de combinaciones</p>
-          <h2 class="titulo-2" id="taller-titulo">Tú eliges la ficha. <em>Nosotros la engarzamos.</em></h2>
-          <p class="lede">Escoge la base, la forma y el metal. Toca una ficha del menú y mira cómo se monta en la joya.</p>
-        </header>
-
-        <div class="taller__app" data-taller>
-          <div class="taller__escenario" data-taller-escenario>
-            <svg class="taller__svg" viewBox="0 0 400 320" data-taller-svg aria-hidden="true"></svg>
-            <div class="engaste" data-engaste data-tipo="collar">
-              <span class="engaste__aro engaste__aro--arriba"></span>
-              <span class="engaste__aro engaste__aro--izq"></span>
-              <span class="engaste__aro engaste__aro--der"></span>
-              <div class="engaste__ficha" data-engaste-ficha></div>
-              <span class="engaste__pulso"></span>
-            </div>
-            <p class="taller__etiqueta" data-taller-etiqueta aria-live="polite"></p>
-          </div>
-
-          <div class="taller__menu">
-            <p class="taller__menu-titulo" id="taller-fichas-titulo">Fichas de talavera</p>
-            <div class="taller__fichas" data-taller-fichas role="group" aria-labelledby="taller-fichas-titulo"></div>
-          </div>
-
-          <div class="taller__opciones">
-            <fieldset class="opciones">
-              <legend class="opciones__titulo">Base</legend>
-              <div class="opciones__fila">
-                <label class="opcion"><input type="radio" name="taller-tipo" id="taller-tipo-collar" value="collar" checked><span>Collar · 45 cm</span></label>
-                <label class="opcion"><input type="radio" name="taller-tipo" id="taller-tipo-pulsera" value="pulsera"><span>Pulsera · 18 cm</span></label>
-              </div>
-            </fieldset>
-            <fieldset class="opciones">
-              <legend class="opciones__titulo">Forma de la ficha</legend>
-              <div class="opciones__fila" data-taller-formas></div>
-            </fieldset>
-            <fieldset class="opciones">
-              <legend class="opciones__titulo">Metal</legend>
-              <div class="opciones__fila" data-taller-metales></div>
-            </fieldset>
-            <div class="taller__total">
-              <div>
-                <p class="taller__precio" data-taller-precio>$0</p>
-                <p class="taller__desglose" data-taller-desglose></p>
-              </div>
-              <button class="boton boton--primario" type="button" data-taller-anadir>Añadir a la caja</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ PROBADOR DE SILUETA ============ -->
-    <section class="seccion probador" id="probador" aria-labelledby="probador-titulo" data-reveal="damero">
-      <div class="contenedor">
-        <header class="seccion__cabeza">
-          <p class="eyebrow">Probador de silueta</p>
-          <h2 class="titulo-2" id="probador-titulo">Mira cómo cae <em>antes de pedirla.</em></h2>
-          <p class="lede">
-            <span class="solo-puntero">Arrastra un collar al cuello o una pulsera a la muñeca. También puedes hacer clic en una pieza y luego en la silueta.</span>
-            <span class="solo-tactil">Toca una pieza de la bandeja y luego toca la silueta.</span>
-          </p>
-        </header>
-
-        <div class="probador__app" data-probador>
-          <div class="bandeja">
-            <p class="bandeja__estado" data-bandeja-estado aria-live="polite">Elige una pieza de la bandeja.</p>
-            <ul class="bandeja__lista" data-bandeja></ul>
-          </div>
-
-          <div class="probador__lienzos">
-            <div class="probador__pestanas" role="group" aria-label="Silueta visible">
-              <button type="button" class="segmentado__op" data-pestana="cuello" aria-pressed="true">Cuello</button>
-              <button type="button" class="segmentado__op" data-pestana="muneca" aria-pressed="false">Muñeca</button>
-            </div>
-
-            <figure class="lienzo is-visible" data-zona="cuello">
-              <svg class="lienzo__svg" viewBox="0 0 400 360" aria-hidden="true">
-                <defs>
-                  <linearGradient id="piel-busto" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#EDE6DA"/>
-                    <stop offset=".22" stop-color="#FFFDF8"/>
-                    <stop offset=".78" stop-color="#FFFDF8"/>
-                    <stop offset="1" stop-color="#EDE6DA"/>
-                  </linearGradient>
-                  <filter id="sombra-silueta" x="-10%" y="-10%" width="120%" height="120%">
-                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#102F5A" flood-opacity=".12"/>
-                  </filter>
-                </defs>
-                <g filter="url(#sombra-silueta)">
-                  <path fill="url(#piel-busto)" d="M162 40C162 70 164 96 166 116C168 136 142 148 108 157C70 166 40 181 27 210C16 234 12 300 12 360H388C388 300 384 234 373 210C360 181 330 166 292 157C258 148 232 136 234 116C236 96 238 70 238 40Z"/>
-                  <ellipse cx="200" cy="40" rx="38" ry="8" fill="#F1ECE3"/>
-                </g>
-                <path d="M148 176Q172 168 190 178M252 176Q228 168 210 178" fill="none" stroke="#1A4B8E" stroke-opacity=".08" stroke-width="2" stroke-linecap="round"/>
-                <g data-capa="collar"></g>
-              </svg>
-              <button class="lienzo__objetivo" type="button" data-objetivo>
-                <span class="sr-only">Probar la pieza seleccionada en el cuello</span>
-              </button>
-              <figcaption class="lienzo__pie">
-                <span class="lienzo__nombre">Cuello</span>
-                <span class="lienzo__info" data-lienzo-info></span>
-                <span class="lienzo__acciones" data-lienzo-acciones hidden>
-                  <button type="button" class="enlace" data-lienzo-anadir>Añadir a la caja</button>
-                  <button type="button" class="enlace enlace--suave" data-lienzo-quitar>Quitar</button>
-                </span>
-              </figcaption>
-              <p class="lienzo__aviso" data-lienzo-aviso aria-live="polite"></p>
-            </figure>
-
-            <figure class="lienzo" data-zona="muneca">
-              <svg class="lienzo__svg" viewBox="0 0 400 360" aria-hidden="true">
-                <defs>
-                  <!-- Cada silueta lleva sus propios defs: en móvil la otra está oculta (display:none). -->
-                  <linearGradient id="piel-mano" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0" stop-color="#EDE6DA"/>
-                    <stop offset=".25" stop-color="#FFFDF8"/>
-                    <stop offset=".75" stop-color="#FFFDF8"/>
-                    <stop offset="1" stop-color="#EDE6DA"/>
-                  </linearGradient>
-                  <filter id="sombra-mano" x="-10%" y="-10%" width="120%" height="120%">
-                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#102F5A" flood-opacity=".12"/>
-                  </filter>
-                </defs>
-                <g data-capa="pulsera-atras"></g>
-                <g filter="url(#sombra-mano)" fill="url(#piel-mano)">
-                  <path d="M146 360C150 318 160 284 166 262C168 252 168 244 168 236H232C232 244 232 252 234 262C240 284 250 318 254 360Z"/>
-                  <rect x="156" y="116" width="88" height="130" rx="34"/>
-                  <rect x="160" y="54" width="18" height="96" rx="9"/>
-                  <rect x="180" y="40" width="18" height="100" rx="9"/>
-                  <rect x="200" y="44" width="18" height="100" rx="9"/>
-                  <rect x="220" y="62" width="17" height="90" rx="8.5"/>
-                  <rect x="150" y="140" width="19" height="70" rx="9.5" transform="rotate(-38 160 200)"/>
-                </g>
-                <g data-capa="pulsera-frente"></g>
-              </svg>
-              <button class="lienzo__objetivo" type="button" data-objetivo>
-                <span class="sr-only">Probar la pieza seleccionada en la muñeca</span>
-              </button>
-              <figcaption class="lienzo__pie">
-                <span class="lienzo__nombre">Muñeca</span>
-                <span class="lienzo__info" data-lienzo-info></span>
-                <span class="lienzo__acciones" data-lienzo-acciones hidden>
-                  <button type="button" class="enlace" data-lienzo-anadir>Añadir a la caja</button>
-                  <button type="button" class="enlace enlace--suave" data-lienzo-quitar>Quitar</button>
-                </span>
-              </figcaption>
-              <p class="lienzo__aviso" data-lienzo-aviso aria-live="polite"></p>
-            </figure>
-          </div>
-        </div>
-        <p class="probador__nota">La silueta es una referencia de proporción: un collar de 45 cm y una pulsera de 18 cm sobre un cuerpo de talla media.</p>
-      </div>
-    </section>
-
-    <!-- ============ ENSAMBLO, LUEGO EXISTO ============ -->
-    <section class="seccion ensamble" id="ensamble" aria-labelledby="ensamble-titulo" data-reveal="diagonal">
-      <div class="contenedor ensamble__grid">
-        <header class="seccion__cabeza ensamble__cabeza">
-          <p class="eyebrow">Transparencia</p>
-          <h2 class="titulo-2" id="ensamble-titulo">Ensamblo, <em>luego existo.</em></h2>
-          <p class="lede">No hacemos la talavera, hacemos que te la quieras poner.</p>
-        </header>
-
-        <div class="division">
-          <div class="division__col">
-            <p class="division__quien">Lo hace el taller aliado</p>
-            <ol class="division__lista">
-              <li>Prepara el barro: mezcla barro negro y blanco de la región y lo deja reposar.</li>
-              <li>Moldea la pieza y la hornea por primera vez.</li>
-              <li>La esmalta y la pinta a mano.</li>
-              <li>La hornea por segunda vez y la certifica.</li>
-            </ol>
-          </div>
-          <div class="division__col division__col--nuestra">
-            <p class="division__quien">Lo hacemos nosotros</p>
-            <ol class="division__lista">
-              <li>Elegimos cada ficha y revisamos que no traiga grietas.</li>
-              <li>La cortamos al tamaño de la joya y pulimos el canto.</li>
-              <li>Unimos pasadores, aros y cadena.</li>
-              <li>La empacamos en su caja de madera.</li>
-            </ol>
-          </div>
-        </div>
-
-        <figure class="video" data-ensamble>
-          <div class="video__marco">
-            <!-- Para usar un video real: pon la ruta en data-src (webm/mp4, menos de 2 MB) y un poster. -->
-            <video class="video__real" data-src="" muted loop playsinline preload="none" hidden></video>
-            <svg class="video__svg" viewBox="0 0 400 250" role="img" aria-labelledby="video-titulo video-desc">
-              <title id="video-titulo">Cómo ensamblamos una pieza</title>
-              <desc id="video-desc">Animación en bucle de cuatro pasos: recibimos las fichas del taller aliado, las cortamos, unimos el pasador y la cadena, y empacamos la pieza en una caja de madera.</desc>
-              <defs>
-                <symbol id="mano" viewBox="0 0 60 90">
-                  <rect x="15" y="54" width="30" height="36" rx="3" fill="#102F5A"/>
-                  <rect x="13" y="50" width="34" height="8" rx="3" fill="#1A4B8E"/>
-                  <path d="M16 52C12 40 12 22 18 13C22 7 38 7 42 13C48 22 48 40 44 52Z" fill="#D6BE9C"/>
-                  <path d="M18 36C9 32 5 24 8 19C11 15 17 20 21 28Z" fill="#C9AE89"/>
-                  <path d="M25 14V27M31 12V27M37 14V27" stroke="#B89A74" stroke-width="1.3" stroke-linecap="round"/>
-                </symbol>
-                <pattern id="rejilla" width="12" height="12" patternUnits="userSpaceOnUse">
-                  <path d="M12 0H0V12" fill="none" stroke="#FBF7EE" stroke-opacity=".16" stroke-width=".8"/>
-                </pattern>
-                <clipPath id="corte-1"><rect x="150" y="75" width="50" height="50"/></clipPath>
-                <clipPath id="corte-2"><rect x="200" y="75" width="50" height="50"/></clipPath>
-                <clipPath id="corte-3"><rect x="150" y="125" width="50" height="56"/></clipPath>
-                <clipPath id="corte-4"><rect x="200" y="125" width="50" height="56"/></clipPath>
-              </defs>
-              <rect width="400" height="250" fill="#F4EEE3"/>
-
-              <!-- 1 · Recibimos -->
-              <g class="escena e1" data-escena="0">
-                <rect x="137" y="118" width="126" height="10" fill="#7E5C38"/>
-                <g class="e1-ficha" style="--i:0"><g data-ficha="estrella" data-forma="square" data-x="152" data-y="94" data-s="30"></g></g>
-                <g class="e1-ficha" style="--i:1"><g data-ficha="cholula" data-forma="round" data-x="185" data-y="88" data-s="30"></g></g>
-                <g class="e1-ficha" style="--i:2"><g data-ficha="poblano" data-forma="square" data-x="218" data-y="94" data-s="30"></g></g>
-                <rect x="135" y="126" width="130" height="80" fill="#C8A172"/>
-                <rect x="135" y="126" width="130" height="5" fill="#B38A5C"/>
-                <path class="e1-solapa" d="M135 126H199L191 104H127Z" fill="#D6B385"/>
-                <path class="e1-solapa" d="M201 126H265L273 104H209Z" fill="#D6B385"/>
-                <rect x="168" y="150" width="64" height="32" fill="#FBF7EE"/>
-                <text x="200" y="163" text-anchor="middle" class="svg-etiqueta">TALLER ALIADO</text>
-                <text x="200" y="174" text-anchor="middle" class="svg-etiqueta svg-etiqueta--sub">Puebla · D.O.</text>
-                <g class="e1-manos">
-                  <use href="#mano" width="52" height="78" transform="translate(114 222) rotate(40) translate(-26 -70)"/>
-                  <use href="#mano" width="52" height="78" transform="translate(286 222) rotate(-40) scale(-1 1) translate(-26 -70)"/>
-                </g>
-                <g class="e1-sello">
-                  <circle cx="318" cy="74" r="22" fill="#FBF7EE" stroke="#1A4B8E" stroke-width="2"/>
-                  <path d="M307 74l8 8 14-16" fill="none" stroke="#1A4B8E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                  <text x="318" y="112" text-anchor="middle" class="svg-etiqueta">REVISADA</text>
-                </g>
-              </g>
-
-              <!-- 2 · Cortamos -->
-              <g class="escena e2" data-escena="1">
-                <rect x="60" y="28" width="280" height="196" rx="6" fill="#1D3E6C"/>
-                <rect x="60" y="28" width="280" height="196" rx="6" fill="url(#rejilla)"/>
-                <g class="e2-q e2-q1" clip-path="url(#corte-1)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
-                <g class="e2-q e2-q2" clip-path="url(#corte-2)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
-                <g class="e2-q e2-q3" clip-path="url(#corte-3)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
-                <g class="e2-q e2-q4" clip-path="url(#corte-4)"><g data-ficha="poblano" data-forma="square" data-x="150" data-y="75" data-s="100"></g></g>
-                <path class="e2-guia" d="M200 56V196M124 125H276" stroke="#D39A2E" stroke-width="1.4" stroke-dasharray="4 4"/>
-                <path class="e2-corte e2-corte--v" d="M200 76V178" pathLength="1"/>
-                <path class="e2-corte e2-corte--h" d="M151 125H249" pathLength="1"/>
-                <g class="e2-disco">
-                  <g class="e2-sierra">
-                    <circle r="17" fill="#C9CED6"/>
-                    <circle r="16" fill="none" stroke="#8B93A0" stroke-width="3" stroke-dasharray="2.2 2"/>
-                    <circle r="4" fill="#5B6270"/>
-                  </g>
-                </g>
-                <use href="#mano" width="52" height="78" transform="translate(84 236) rotate(62) translate(-26 -70)"/>
-              </g>
-
-              <!-- 3 · Unimos -->
-              <g class="escena e3" data-escena="2">
-                <path class="e3-cadena e3-cadena--base" d="M20 62Q110 110 200 102Q290 110 380 62" pathLength="1"/>
-                <path class="e3-cadena e3-cadena--luz" d="M20 62Q110 110 200 102Q290 110 380 62" pathLength="1"/>
-                <g class="e3-dije">
-                  <g data-ficha="cholula" data-forma="round" data-x="170" data-y="112" data-s="60"></g>
-                  <g class="e3-pasador">
-                    <circle cx="200" cy="104" r="6.5" fill="none" stroke="#9AA2AD" stroke-width="2.8"/>
-                    <rect x="195.5" y="109" width="9" height="8" rx="1.5" fill="#A7AEB8"/>
-                  </g>
-                  <circle class="e3-pegamento" cx="200" cy="116" r="6" fill="#D39A2E"/>
-                </g>
-                <g class="e3-pinza">
-                  <path d="M196 100L182 18M204 100L218 18" stroke="#8B93A0" stroke-width="3" stroke-linecap="round"/>
-                  <use href="#mano" width="52" height="78" transform="translate(200 2) rotate(180) translate(-26 -70)"/>
-                </g>
-                <text x="200" y="232" text-anchor="middle" class="svg-etiqueta e3-rotulo">PASADOR Y ARO DE PLATA .925</text>
-              </g>
-
-              <!-- 4 · Empacamos -->
-              <g class="escena e4" data-escena="3">
-                <ellipse cx="200" cy="224" rx="92" ry="6" fill="#1A4B8E" opacity=".08"/>
-                <g class="e4-conjunto">
-                  <rect x="137" y="146" width="126" height="10" fill="#5A3820"/>
-                  <g class="e4-tarjeta">
-                    <rect x="164" y="112" width="72" height="42" fill="#FBF7EE" stroke="#E3D8C6"/>
-                    <text x="200" y="128" text-anchor="middle" class="svg-etiqueta">CUIDADOS</text>
-                    <path d="M176 136H224M176 143H214" stroke="#1A4B8E" stroke-opacity=".3" stroke-width="2"/>
-                  </g>
-                  <g class="e4-collar">
-                    <path d="M200 40C182 60 176 100 200 124C224 100 218 60 200 40Z" fill="none" stroke="#C79A45" stroke-width="2.2"/>
-                    <g data-ficha="cholula" data-forma="drop" data-x="186" data-y="124" data-s="28"></g>
-                    <use href="#mano" width="44" height="66" transform="translate(200 44) rotate(180) translate(-22 -60)"/>
-                  </g>
-                  <rect x="135" y="150" width="130" height="64" rx="3" fill="#A8744A"/>
-                  <path d="M138 164C170 160 210 168 262 162M138 180C176 176 214 184 262 178M138 198C166 196 222 202 262 196" stroke="#8C5C37" stroke-width="1.4" fill="none"/>
-                  <rect x="190" y="170" width="20" height="20" rx="1.5" fill="#FBF7EE"/>
-                  <path d="M200 172L208 180L200 188L192 180Z" fill="#1A4B8E"/>
-                  <circle cx="200" cy="180" r="2.4" fill="#D39A2E"/>
-                  <g class="e4-tapa">
-                    <rect x="131" y="130" width="138" height="22" rx="3" fill="#B98356"/>
-                    <path d="M134 139C170 135 220 143 266 137" stroke="#9A6A40" stroke-width="1.2" fill="none"/>
-                    <rect x="131" y="148" width="138" height="4" fill="#8C5C37"/>
-                    <rect x="194" y="146" width="12" height="10" rx="2" fill="#C9A15B"/>
-                  </g>
-                </g>
-                <g class="e4-etiqueta">
-                  <path d="M268 158L292 150" stroke="#8C5C37" stroke-width="1.2"/>
-                  <path d="M292 140H348V168H292L284 154Z" fill="#E9D9BE"/>
-                  <text x="318" y="152" text-anchor="middle" class="svg-etiqueta">ENGARCE</text>
-                  <text x="318" y="162" text-anchor="middle" class="svg-etiqueta svg-etiqueta--sub">Lote 24-117</text>
-                </g>
-              </g>
-            </svg>
-            <button class="video__pausa" type="button" data-pausa aria-pressed="false">
-              <span class="sr-only">Pausar la animación</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icono-pausa" d="M8 6h3v12H8zM13 6h3v12h-3z"/><path class="icono-play" d="M8 5.5v13l10-6.5z"/></svg>
-            </button>
-          </div>
-          <figcaption>
-            <ol class="video__pasos">
-              <li><button type="button" class="paso" data-paso="0"><span class="paso__barra"></span><span class="paso__num">1</span><span class="paso__titulo">Recibimos</span><span class="paso__texto">Revisamos cada ficha que llega del taller: color, esmalte y que no traiga grietas.</span></button></li>
-              <li><button type="button" class="paso" data-paso="1"><span class="paso__barra"></span><span class="paso__num">2</span><span class="paso__titulo">Cortamos</span><span class="paso__texto">Cortamos el azulejo al tamaño de la joya y pulimos el canto para que no raspe.</span></button></li>
-              <li><button type="button" class="paso" data-paso="2"><span class="paso__barra"></span><span class="paso__num">3</span><span class="paso__titulo">Unimos</span><span class="paso__texto">Pegamos el pasador, montamos el aro y pasamos la cadena o el hilo.</span></button></li>
-              <li><button type="button" class="paso" data-paso="3"><span class="paso__barra"></span><span class="paso__num">4</span><span class="paso__titulo">Empacamos</span><span class="paso__texto">Cada pieza va en su caja de madera, con tarjeta de cuidados y el origen de su ficha.</span></button></li>
-            </ol>
-          </figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- ============ CUIDADOS Y REPUESTOS ============ -->
-    <section class="seccion cuidados" id="cuidados" aria-labelledby="cuidados-titulo" data-reveal="filas">
-      <div class="contenedor cuidados__grid">
-        <header class="seccion__cabeza cuidados__cabeza">
-          <p class="eyebrow">Cuidados y repuestos</p>
-          <h2 class="titulo-2" id="cuidados-titulo">Es cerámica. <em>Tratémosla como tal.</em></h2>
-          <p class="lede">Te decimos lo que le puede pasar a tu pieza y cómo evitarlo. Y si pasa, tenemos repuesto.</p>
-        </header>
-
-        <div class="acordeon" data-acordeon>
-          <div class="acordeon__item is-abierto">
-            <h3 class="acordeon__encabezado">
-              <button class="acordeon__boton" type="button" id="ac-b1" aria-expanded="true" aria-controls="ac-p1">
-                La talavera puede romperse
-                <span class="acordeon__icono" aria-hidden="true"></span>
-              </button>
-            </h3>
-            <div class="acordeon__panel" id="ac-p1" role="region" aria-labelledby="ac-b1">
-              <div class="acordeon__contenido"><div class="acordeon__texto">
-                <p>Es barro horneado dos veces y esmaltado a mano. Aguanta el uso diario, pero no un golpe contra el piso, una puerta o el lavabo. Si cae sobre algo duro, se puede despostillar o partir.</p>
-                <p>No te lo escondemos: es parte de llevar algo hecho a mano. Por eso vendemos repuestos de cada ficha.</p>
-              </div></div>
-            </div>
-          </div>
-          <div class="acordeon__item">
-            <h3 class="acordeon__encabezado">
-              <button class="acordeon__boton" type="button" id="ac-b2" aria-expanded="false" aria-controls="ac-p2">
-                Cómo limpiarla
-                <span class="acordeon__icono" aria-hidden="true"></span>
-              </button>
-            </h3>
-            <div class="acordeon__panel" id="ac-p2" role="region" aria-labelledby="ac-b2" inert>
-              <div class="acordeon__contenido"><div class="acordeon__texto">
-                <p>Usa un paño suave, seco o apenas húmedo. Sécala enseguida. No uses limpiadores con cloro, alcohol ni máquinas de ultrasonido: pueden opacar el esmalte y aflojar el pegamento del pasador.</p>
-              </div></div>
-            </div>
-          </div>
-          <div class="acordeon__item">
-            <h3 class="acordeon__encabezado">
-              <button class="acordeon__boton" type="button" id="ac-b3" aria-expanded="false" aria-controls="ac-p3">
-                Agua, perfume y sol
-                <span class="acordeon__icono" aria-hidden="true"></span>
-              </button>
-            </h3>
-            <div class="acordeon__panel" id="ac-p3" role="region" aria-labelledby="ac-b3" inert>
-              <div class="acordeon__contenido"><div class="acordeon__texto">
-                <p>El esmalte de la talavera no se decolora con el sol. El metal sí reacciona: quítatela para bañarte o nadar, y ponte el perfume antes que la joya. La chapa de oro dura más si no la mojas.</p>
-              </div></div>
-            </div>
-          </div>
-          <div class="acordeon__item">
-            <h3 class="acordeon__encabezado">
-              <button class="acordeon__boton" type="button" id="ac-b4" aria-expanded="false" aria-controls="ac-p4">
-                Guárdala en su caja
-                <span class="acordeon__icono" aria-hidden="true"></span>
-              </button>
-            </h3>
-            <div class="acordeon__panel" id="ac-p4" role="region" aria-labelledby="ac-b4" inert>
-              <div class="acordeon__contenido"><div class="acordeon__texto">
-                <p>La caja de madera trae un compartimento por pieza. Guárdalas separadas: el esmalte raya el metal y el metal raya el esmalte.</p>
-              </div></div>
-            </div>
-          </div>
-          <div class="acordeon__item">
-            <h3 class="acordeon__encabezado">
-              <button class="acordeon__boton" type="button" id="ac-b5" aria-expanded="false" aria-controls="ac-p5">
-                Si se rompe, no la tires
-                <span class="acordeon__icono" aria-hidden="true"></span>
-              </button>
-            </h3>
-            <div class="acordeon__panel" id="ac-p5" role="region" aria-labelledby="ac-b5" inert>
-              <div class="acordeon__contenido"><div class="acordeon__texto">
-                <p>Pide una ficha de repuesto del mismo patrón. Llega con su aro de cambio: lo abres con unas pinzas planas, cambias la ficha y lo vuelves a cerrar. Si prefieres, mándanos la pieza y la cambiamos nosotros.</p>
-                <p>Si tu pedido llega roto, te mandamos la ficha sin costo.</p>
-              </div></div>
-            </div>
-          </div>
-        </div>
-
-        <aside class="repuesto" aria-labelledby="repuesto-titulo" data-repuesto>
-          <p class="eyebrow">Repuestos</p>
-          <h3 class="repuesto__titulo" id="repuesto-titulo">Ficha de repuesto</h3>
-          <div class="repuesto__vista" aria-hidden="true">
-            <span class="repuesto__rota" data-repuesto-rota></span>
-            <svg class="repuesto__flecha" viewBox="0 0 40 12"><path d="M1 6H36M31 1.5L37 6L31 10.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="repuesto__nueva" data-repuesto-nueva></span>
-          </div>
-          <div class="repuesto__campos">
-            <label class="campo">
-              <span class="campo__label">Patrón</span>
-              <select id="repuesto-patron" data-repuesto-patron></select>
-            </label>
-            <label class="campo">
-              <span class="campo__label">Forma</span>
-              <select id="repuesto-forma" data-repuesto-forma></select>
-            </label>
-          </div>
-          <p class="repuesto__incluye">Incluye aro de cambio y tarjeta con instrucciones.</p>
-          <div class="repuesto__pie">
-            <p class="repuesto__precio" data-repuesto-precio>$180</p>
-            <button class="boton boton--terracota" type="button" data-repuesto-anadir>Comprar repuesto</button>
-          </div>
-        </aside>
-      </div>
-    </section>
+    <div class="pie-hoja">
+      <p class="dato" data-conteo>0 palabras</p>
+      <p class="pie-hoja__etiquetas dato" data-pie-etiquetas>Escribe #algo para etiquetar</p>
+    </div>
   </main>
+</div>
 
-  <footer class="pie">
-    <div class="contenedor pie__grid">
-      <div class="pie__marca">
-        <p class="marca__nombre">engarce</p>
-        <p class="pie__lema">Talavera de taller certificado, ensamblada en joyería. La cerámica es de ellos; el diseño y el ensamble, nuestros.</p>
-      </div>
-      <nav class="pie__nav" aria-labelledby="pie-tienda">
-        <p class="pie__titulo" id="pie-tienda">Tienda</p>
-        <ul>
-          <li><a href="#catalogo">Collares y pulseras</a></li>
-          <li><a href="#taller">Taller de combinaciones</a></li>
-          <li><a href="#probador">Probador de silueta</a></li>
-        </ul>
-      </nav>
-      <nav class="pie__nav" aria-labelledby="pie-ayuda">
-        <p class="pie__titulo" id="pie-ayuda">Ayuda</p>
-        <ul>
-          <li><a href="#cuidados">Cuidados de la talavera</a></li>
-          <li><a href="#repuesto-titulo">Repuestos de fichas</a></li>
-          <li><a href="#ensamble">Cómo lo hacemos</a></li>
-        </ul>
-      </nav>
-      <form class="boletin" data-boletin novalidate>
-        <label class="pie__titulo" for="boletin-correo">Patrones nuevos</label>
-        <p class="boletin__texto">Te avisamos cuando llegue un lote nuevo de los talleres. Un correo, sin cadena de promociones.</p>
-        <div class="boletin__fila">
-          <input class="boletin__campo" id="boletin-correo" type="email" name="correo" autocomplete="email" placeholder="tu@correo.com" required aria-describedby="boletin-estado">
-          <button class="boton boton--primario" type="submit">Avísame</button>
-        </div>
-        <p class="boletin__estado" id="boletin-estado" data-boletin-estado aria-live="polite"></p>
-      </form>
-      <p class="pie__legal">Prototipo de diseño. Los nombres de talleres, lotes y precios son de ejemplo. Pagos procesados por Mercado Pago.</p>
-    </div>
-  </footer>
+<script>
+(() => {
+  'use strict';
 
-  <!-- Carrito flotante: caja de madera -->
-  <button class="caja" type="button" data-caja aria-label="Abrir tu caja, 0 piezas">
-    <svg class="caja__svg" viewBox="0 0 64 56" aria-hidden="true">
-      <ellipse cx="32" cy="53" rx="24" ry="2.4" fill="#102F5A" opacity=".14"/>
-      <rect x="9" y="20" width="46" height="6" fill="#5A3820"/>
-      <rect x="7" y="23" width="50" height="28" rx="2.5" fill="#A8744A"/>
-      <path d="M9 30C20 28 30 32 55 29M9 38C22 36 34 40 55 37M9 45C18 44 40 47 55 44" stroke="#8C5C37" stroke-width=".8" fill="none"/>
-      <rect x="26" y="31" width="12" height="12" rx="1" fill="#FBF7EE"/>
-      <path d="M32 32.5L36.5 37L32 41.5L27.5 37Z" fill="#1A4B8E"/>
-      <circle cx="32" cy="37" r="1.5" fill="#D39A2E"/>
-      <g class="caja__tapa">
-        <rect x="5" y="14" width="54" height="10" rx="2.5" fill="#B98356"/>
-        <path d="M7 18C22 16 40 20 57 17" stroke="#9A6A40" stroke-width=".8" fill="none"/>
-        <rect x="5" y="22" width="54" height="2" fill="#8C5C37"/>
-        <rect x="29.5" y="21" width="5" height="5" rx="1" fill="#C9A15B"/>
-      </g>
-    </svg>
-    <span class="caja__cuenta" data-caja-cuenta data-n="0">0</span>
-  </button>
+  /* ---------------- Datos fijos ---------------- */
+  const IDEAS = [
+    '¿Qué pasó hoy que no quieres olvidar?',
+    '¿Qué te tuvo pensando más de la cuenta?',
+    'Escribe sobre alguien que hoy te hizo bien.',
+    '¿Qué te habría gustado decir y no dijiste?',
+    'Tres cosas pequeñas que salieron bien.',
+    '¿Qué te está costando trabajo ahorita?',
+    'Describe dónde estás, como si nadie conociera el lugar.',
+    '¿Qué harías mañana si nada te detuviera?',
+    'Una conversación que se te quedó grabada.',
+    '¿Qué aprendiste de ti esta semana?',
+    'Algo que te dio risa, aunque sea tonto.',
+    '¿De qué tienes ganas últimamente?',
+    'Una carta para ti dentro de un año.',
+    '¿Qué estás cargando que podrías soltar?',
+    '¿Qué canción o frase traes en la cabeza y por qué?'
+  ];
+  const ICONO = {
+    1: '<circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    2: '<circle cx="9" cy="9" r="3.4" fill="currentColor"/><path d="M9 2.5v1.6M2.5 9h1.6M4.4 4.4l1.1 1.1M13.6 4.4l-1.1 1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8.5 19h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8.5 19z" fill="currentColor" opacity=".55"/>',
+    3: '<path d="M7 18.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 12 3.3 3.3 0 0 0 7 18.5z" fill="currentColor"/>',
+    4: '<path d="M7 14.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 8 3.3 3.3 0 0 0 7 14.5z" fill="currentColor"/><path d="M8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    5: '<path d="M7 13.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 7 3.3 3.3 0 0 0 7 13.5z" fill="currentColor"/><path d="M12.5 13.5l-2.5 4h3l-2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+  };
+  const CLIMAS = [
+    { v: 1, nombre: 'Despejado' },
+    { v: 2, nombre: 'Templado' },
+    { v: 3, nombre: 'Nublado' },
+    { v: 4, nombre: 'Lluvia' },
+    { v: 5, nombre: 'Tormenta' }
+  ];
 
-  <!-- Panel de la caja -->
-  <dialog class="hoja hoja--lateral" data-panel-caja aria-labelledby="caja-titulo">
-    <div class="hoja__cuerpo panel-caja">
-      <div class="panel-caja__cabeza">
-        <h2 class="panel-caja__titulo" id="caja-titulo">Tu caja</h2>
-        <button class="hoja__cerrar" type="button" data-cerrar>
-          <span class="sr-only">Cerrar</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <div class="panel-caja__vista" data-vista-caja>
-      <div class="panel-caja__vacio" data-caja-vacio>
-        <p>Tu caja está vacía. Lo que añadas llega aquí, cada pieza en su compartimento.</p>
-        <div class="panel-caja__atajos">
-          <a class="boton boton--primario" href="#catalogo" data-caja-ir>Ver el catálogo</a>
-          <a class="boton boton--linea" href="#taller" data-caja-ir>Arma la tuya</a>
-        </div>
-      </div>
-      <div class="envio" data-caja-envio hidden>
-        <p class="envio__texto" data-caja-envio-texto></p>
-        <span class="envio__barra" aria-hidden="true"><span class="envio__avance" data-caja-envio-avance></span></span>
-      </div>
-      <ul class="panel-caja__lista" data-caja-lista></ul>
-      <div class="panel-caja__pie" data-caja-pie hidden>
-        <p class="panel-caja__subtotal"><span>Subtotal</span><strong data-caja-subtotal>$0</strong></p>
-        <p class="panel-caja__nota" data-caja-nota>El envío se calcula al pagar. Cada pieza va en caja de madera con tarjeta de cuidados.</p>
-        <button class="boton boton--primario boton--ancho" type="button" data-caja-pagar>Ir a pagar</button>
-      </div>
-      </div>
+  /* ---------------- Utilidades ---------------- */
+  const $ = (s) => document.querySelector(s);
+  const pad = (n) => String(n).padStart(2, '0');
+  const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  const aFecha = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
+  const isoDe = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fmtLarga = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const fmtMes = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
+  const fmtSemana = new Intl.DateTimeFormat('es-MX', { weekday: 'short' });
+  const fmtHora = new Intl.DateTimeFormat('es-MX', { hour: 'numeric', minute: '2-digit' });
+  const fmtNum = new Intl.NumberFormat('es-MX');
+  const nuevoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const palabras = (t) => (t.trim().match(/\S+/g) || []).length;
+  const etiquetasDe = (t) => [...new Set((t.match(/#[\p{L}\p{N}_-]+/gu) || []).map((x) => x.slice(1).toLowerCase()))];
+  const normal = (t) => t.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+  const tieneTexto = (e) => Boolean((e.titulo || '').trim() || (e.cuerpo || '').trim());
+  const ordenar = (a, b) => (b.fecha.localeCompare(a.fecha)) || ((b.creada || 0) - (a.creada || 0));
+  const capital = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-      <!-- Envío y pago: los datos se mandan a /api/crear-pago y el cobro ocurre en Mercado Pago -->
-      <form class="checkout" data-checkout novalidate hidden>
-        <button type="button" class="checkout__volver enlace enlace--suave" data-checkout-volver>Volver a la caja</button>
+  /* ---------------- Estado ---------------- */
+  const estado = {
+    entradas: new Map(),   // id -> entrada guardada (o en camino)
+    actual: null,          // entrada abierta en la hoja
+    filtroTexto: '',
+    filtroEtiqueta: null,
+    mes: (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })(),
+    cargado: false,
+    idea: Math.floor(Math.random() * IDEAS.length)
+  };
+  const pendientes = new Set();   // ids con escritura en curso: la copia local manda
+  const borradas = new Set();     // ids borrados aquí aunque el almacén aún no lo confirme
+  let sucio = false, temporizador = null;
 
-        <fieldset class="checkout__grupo">
-          <legend class="checkout__titulo">Contacto</legend>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Nombre completo</span>
-            <input id="co-nombre" name="nombre" autocomplete="name" required minlength="3" maxlength="80">
-            <span class="campo__error">Escribe tu nombre y apellido.</span>
-          </label>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Correo</span>
-            <input id="co-correo" name="correo" type="email" autocomplete="email" inputmode="email" required maxlength="120">
-            <span class="campo__error">Revisa el correo; por ejemplo, nombre@correo.com.</span>
-          </label>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Teléfono celular</span>
-            <input id="co-telefono" name="telefono" type="tel" autocomplete="tel-national" inputmode="numeric" required placeholder="10 dígitos" maxlength="14">
-            <span class="campo__error">Escribe los 10 dígitos, sin lada internacional.</span>
-          </label>
-        </fieldset>
+  /* ---------------- Almacén: cuenta de Claude (privado) o este navegador ---------------- */
+  function almacenLocal() {
+    const CLAVE = 'loquecuento:paginas';
+    const leer = () => {
+      try { const v = JSON.parse(localStorage.getItem(CLAVE) || '[]'); return Array.isArray(v) ? v : []; }
+      catch (e) { return []; }
+    };
+    const escribir = (lista) => { localStorage.setItem(CLAVE, JSON.stringify(lista)); };
+    let disponible = true;
+    try { localStorage.setItem(CLAVE + ':prueba', '1'); localStorage.removeItem(CLAVE + ':prueba'); } catch (e) { disponible = false; }
+    return {
+      etiqueta: disponible ? 'Guardado en este navegador' : 'Sin guardar: este navegador no permite guardar',
+      async guardar(e) {
+        if (!disponible) throw new Error('sin almacenamiento');
+        const lista = leer().filter((x) => x.id !== e.id);
+        lista.push(e);
+        escribir(lista);
+      },
+      async borrar(id) { if (disponible) escribir(leer().filter((x) => x.id !== id)); },
+      escuchar(cb) {
+        cb(leer());
+        window.addEventListener('storage', (ev) => { if (ev.key === CLAVE) cb(leer()); });
+      }
+    };
+  }
 
-        <fieldset class="checkout__grupo">
-          <legend class="checkout__titulo">Dirección de envío</legend>
-          <label class="campo">
-            <span class="campo__label">Código postal</span>
-            <input id="co-cp" name="cp" autocomplete="postal-code" inputmode="numeric" required pattern="[0-9]{5}" maxlength="5">
-            <span class="campo__error">Son 5 dígitos.</span>
-          </label>
-          <label class="campo">
-            <span class="campo__label">Estado</span>
-            <select id="co-estado" name="estado" autocomplete="address-level1" required data-checkout-estados>
-              <option value="">Elige…</option>
-            </select>
-            <span class="campo__error">Elige tu estado.</span>
-          </label>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Ciudad o municipio</span>
-            <input id="co-ciudad" name="ciudad" autocomplete="address-level2" required maxlength="80">
-            <span class="campo__error">Escribe la ciudad o el municipio.</span>
-          </label>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Colonia</span>
-            <input id="co-colonia" name="colonia" autocomplete="address-level3" required maxlength="80">
-            <span class="campo__error">Escribe la colonia.</span>
-          </label>
-          <label class="campo campo--calle">
-            <span class="campo__label">Calle</span>
-            <input id="co-calle" name="calle" autocomplete="address-line1" required maxlength="120">
-            <span class="campo__error">Escribe la calle.</span>
-          </label>
-          <label class="campo campo--numero">
-            <span class="campo__label">Número</span>
-            <input id="co-numero" name="numero" required maxlength="30" placeholder="Ext. / Int.">
-            <span class="campo__error">Falta el número.</span>
-          </label>
-          <label class="campo campo--ancho">
-            <span class="campo__label">Referencias <span class="campo__opcional">(opcional)</span></span>
-            <input id="co-referencias" name="referencias" maxlength="200" placeholder="Entre calles, color de la fachada…">
-          </label>
-        </fieldset>
+  async function almacenClaude() {
+    if (!window.claude || typeof window.claude.use !== 'function') return null;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db || !user) return null;
+    const uid = await user.id();
+    if (!uid) return null;
+    // data/users/<id> es el espacio privado de quien escribe: nadie más lo ve, ni quien comparte la página.
+    const col = db.collection('data/users/' + uid);
+    return {
+      etiqueta: 'Guardado en tu cuenta · privado',
+      guardar(e) {
+        const { id, ...cuerpo } = e;
+        return col.doc(id).set(cuerpo);
+      },
+      borrar(id) { return col.doc(id).delete(); },
+      escuchar(cb, alFallar) {
+        col.onSnapshot((snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), alFallar);
+      }
+    };
+  }
 
-        <dl class="checkout__cuentas">
-          <div><dt>Subtotal</dt><dd data-checkout-subtotal>$0</dd></div>
-          <div><dt>Envío</dt><dd data-checkout-envio>$0</dd></div>
-          <div class="checkout__total"><dt>Total</dt><dd data-checkout-total>$0</dd></div>
-        </dl>
+  let almacen = null;
+  let resolverAlmacen;
+  const almacenListo = new Promise((r) => { resolverAlmacen = r; });
 
-        <p class="checkout__error" data-checkout-error role="alert" hidden></p>
-        <button class="boton boton--primario boton--ancho checkout__pagar" type="submit" data-checkout-pagar>
-          <span data-checkout-pagar-texto>Pagar con Mercado Pago</span>
-        </button>
-        <p class="checkout__seguro">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span>Pagas en el sitio seguro de Mercado Pago: tarjeta, meses sin intereses, OXXO o transferencia SPEI. Nosotros no vemos los datos de tu tarjeta.</span>
-        </p>
-      </form>
-    </div>
-  </dialog>
+  /* ---------------- Indicador de guardado ---------------- */
+  const punto = $('[data-punto]');
+  const estadoTexto = $('[data-estado-texto]');
+  function marcar(tipo, texto) {
+    punto.dataset.estado = tipo;
+    estadoTexto.textContent = texto;
+  }
+  const aviso = $('[data-aviso]');
+  function avisar(msg) { aviso.textContent = msg; aviso.hidden = !msg; }
 
-  <!-- Detalle de producto -->
-  <dialog class="hoja hoja--centro" data-detalle aria-labelledby="detalle-nombre">
-    <div class="hoja__cuerpo detalle">
-      <button class="hoja__cerrar detalle__cerrar" type="button" data-cerrar>
-        <span class="sr-only">Cerrar</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </button>
-      <div class="detalle__visual">
-        <div class="detalle__escena" data-detalle-escena></div>
-        <p class="detalle__pista">
-          <span class="solo-puntero">Pasa el cursor sobre la pieza para ver cómo está armada.</span>
-          <span class="solo-tactil">Toca la pieza para ver cómo está armada.</span>
-        </p>
-      </div>
-      <div class="detalle__info">
-        <p class="eyebrow" data-detalle-patron></p>
-        <h2 class="detalle__nombre" id="detalle-nombre" data-detalle-nombre tabindex="-1"></h2>
-        <p class="detalle__precio" data-detalle-precio></p>
-        <p class="detalle__desc" data-detalle-desc></p>
-        <dl class="detalle__specs" data-detalle-specs></dl>
-        <section class="viaje" data-viaje aria-labelledby="viaje-titulo">
-          <h3 class="viaje__titulo" id="viaje-titulo">El viaje de la pieza</h3>
-          <div class="viaje__ruta">
-            <span class="viaje__linea" aria-hidden="true"></span>
-            <span class="viaje__viajero" aria-hidden="true"></span>
-            <ol class="viaje__puntos" data-viaje-puntos></ol>
-          </div>
-        </section>
-        <div class="detalle__acciones">
-          <button class="boton boton--primario" type="button" data-detalle-anadir>Añadir a la caja</button>
-          <button class="boton boton--linea" type="button" data-detalle-probar>Probar en silueta</button>
-        </div>
-        <section class="afines" data-afines aria-labelledby="afines-titulo">
-          <h3 class="afines__titulo" id="afines-titulo" data-afines-titulo>Del mismo patrón</h3>
-          <ul class="afines__lista" data-afines-lista></ul>
-        </section>
-      </div>
-    </div>
-  </dialog>
+  /* ---------------- Guardar: una escritura a la vez por página ---------------- */
+  const colas = new Map();
+  function guardar(e) {
+    if (!tieneTexto(e)) return Promise.resolve();
+    const copia = { id: e.id, fecha: e.fecha, titulo: e.titulo || '', cuerpo: e.cuerpo || '', clima: e.clima || null, creada: e.creada, editada: Date.now() };
+    pendientes.add(e.id);
+    marcar('guardando', 'Guardando…');
+    const previa = colas.get(e.id) || Promise.resolve();
+    const p = previa
+      .then(() => almacenListo)
+      .then(() => almacen.guardar(copia))
+      .then(() => {
+        if (colas.get(e.id) === p) { colas.delete(e.id); pendientes.delete(e.id); }
+        avisar('');
+        marcar('ok', `${almacen.etiqueta} · ${fmtHora.format(new Date())}`);
+      })
+      .catch((err) => {
+        if (colas.get(e.id) === p) colas.delete(e.id);
+        const lleno = err && err.code === 'quota_exceeded';
+        marcar('error', 'No se guardó');
+        avisar(lleno
+          ? 'Tu cuaderno llegó a su límite de espacio. Borra páginas viejas para seguir escribiendo.'
+          : 'No se pudo guardar el último cambio. Revisa tu conexión; lo intentamos otra vez en cuanto sigas escribiendo.');
+        sucio = true;
+      });
+    colas.set(e.id, p);
+    return p;
+  }
 
-  <!-- Resultado del pago al volver de Mercado Pago -->
-  <dialog class="hoja hoja--centro" data-resultado aria-labelledby="resultado-titulo">
-    <div class="hoja__cuerpo resultado" data-resultado-estado="aprobado">
-      <button class="hoja__cerrar resultado__cerrar" type="button" data-cerrar>
-        <span class="sr-only">Cerrar</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </button>
-      <span class="resultado__sello" aria-hidden="true">
-        <svg class="resultado__icono resultado__icono--aprobado" viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg class="resultado__icono resultado__icono--pendiente" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4.5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <svg class="resultado__icono resultado__icono--rechazado" viewBox="0 0 24 24"><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </span>
-      <p class="eyebrow" data-resultado-folio></p>
-      <h2 class="resultado__titulo" id="resultado-titulo" data-resultado-titulo></h2>
-      <p class="resultado__texto" data-resultado-texto></p>
-      <button class="boton boton--primario" type="button" data-resultado-accion autofocus></button>
-    </div>
-  </dialog>
+  function programarGuardado() {
+    sucio = true;
+    clearTimeout(temporizador);
+    temporizador = setTimeout(guardarAhora, 700);
+  }
+  function guardarAhora() {
+    clearTimeout(temporizador);
+    const e = estado.actual;
+    if (!e || !sucio) return;
+    sucio = false;
+    if (tieneTexto(e)) {
+      estado.entradas.set(e.id, e);
+      guardar(e);
+    }
+  }
 
-  <p class="sr-only" id="anuncios" aria-live="polite"></p>
+  /* ---------------- Elementos ---------------- */
+  const titulo = $('[data-titulo]');
+  const cuerpo = $('[data-cuerpo]');
+  const fecha = $('[data-fecha]');
+  const fechaTexto = $('[data-fecha-texto]');
+  const climas = $('[data-climas]');
+  const lista = $('[data-paginas]');
+  const dias = $('[data-dias]');
 
-  <!-- Cursor propio (solo con ratón) -->
-  <canvas class="cursor-estela" data-estela aria-hidden="true"></canvas>
-  <div class="cursor" data-cursor aria-hidden="true"><span class="cursor__disco"></span><span class="cursor__punto"></span></div>
+  climas.innerHTML = CLIMAS.map((c) =>
+    `<button class="clima" type="button" data-clima="${c.v}" aria-pressed="false" style="--c: var(--c${c.v})" title="${c.nombre}">` +
+      `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONO[c.v]}</svg><span class="sr-only">${c.nombre}</span></button>`
+  ).join('');
+
+  function ajustarAlto() {
+    cuerpo.style.height = 'auto';
+    cuerpo.style.height = cuerpo.scrollHeight + 'px';
+  }
+
+  /* ---------------- Abrir una página en la hoja ---------------- */
+  function abrir(e, { enfocar = false } = {}) {
+    guardarAhora();
+    estado.actual = e;
+    sucio = false;
+    titulo.value = e.titulo || '';
+    cuerpo.value = e.cuerpo || '';
+    fecha.value = e.fecha;
+    fecha.max = hoyISO();
+    $('[data-confirmar]').hidden = true;
+    const d = aFecha(e.fecha);
+    estado.mes = { y: d.getFullYear(), m: d.getMonth() };
+    pintarHoja();
+    pintarIndice();
+    ajustarAlto();
+    if (enfocar) cuerpo.focus({ preventScroll: true });
+  }
+
+  function nuevaPagina(iso = hoyISO()) {
+    return { id: nuevoId(), fecha: iso, titulo: '', cuerpo: '', clima: null, creada: Date.now() };
+  }
+
+  /* Abre la página de ese día si ya existe; si no, una hoja en blanco con esa fecha. */
+  function abrirDia(iso, opciones) {
+    const delDia = [...estado.entradas.values()].filter((x) => x.fecha === iso).sort(ordenar)[0];
+    abrir(delDia || nuevaPagina(iso), opciones);
+  }
+
+  function pintarHoja() {
+    const e = estado.actual;
+    fechaTexto.textContent = capital(fmtLarga.format(aFecha(e.fecha)));
+    climas.querySelectorAll('[data-clima]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.clima) === e.clima)));
+    const n = palabras(e.cuerpo || '');
+    $('[data-conteo]').textContent = n
+      ? `${fmtNum.format(n)} ${n === 1 ? 'palabra' : 'palabras'} · ${Math.max(1, Math.round(n / 200))} min de lectura`
+      : 'Página en blanco';
+    const tags = etiquetasDe(e.cuerpo || '');
+    const pie = $('[data-pie-etiquetas]');
+    pie.textContent = '';
+    if (tags.length) tags.forEach((t) => { const s = document.createElement('span'); s.textContent = '#' + t; pie.appendChild(s); });
+    else pie.textContent = 'Escribe #algo para etiquetar';
+    $('[data-idea]').hidden = Boolean((e.cuerpo || '').trim());
+    $('[data-idea-texto]').textContent = IDEAS[estado.idea];
+    cuerpo.placeholder = 'Cuéntalo todo. Nadie más lo lee.';
+    $('[data-borrar]').hidden = !estado.entradas.has(e.id);
+  }
+
+  /* ---------------- Índice ---------------- */
+  function visibles() {
+    const q = normal(estado.filtroTexto.trim());
+    return [...estado.entradas.values()]
+      .filter((e) => !estado.filtroEtiqueta || etiquetasDe(e.cuerpo || '').includes(estado.filtroEtiqueta))
+      .filter((e) => !q || normal(`${e.titulo} ${e.cuerpo}`).includes(q))
+      .sort(ordenar);
+  }
+
+  function racha() {
+    const dias = new Set([...estado.entradas.values()].map((e) => e.fecha));
+    const d = new Date();
+    if (!dias.has(isoDe(d))) d.setDate(d.getDate() - 1);   // si hoy no has escrito, la racha sigue viva hasta ayer
+    let n = 0;
+    while (dias.has(isoDe(d))) { n += 1; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
+  function pintarCalendario() {
+    const { y, m } = estado.mes;
+    $('[data-mes-nombre]').textContent = capital(fmtMes.format(new Date(y, m, 1)));
+    const hoy = hoyISO();
+    const porDia = new Map();
+    [...estado.entradas.values()].sort(ordenar).forEach((e) => { if (!porDia.has(e.fecha)) porDia.set(e.fecha, e); });
+    const cab = ['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((x) => `<span class="dato" aria-hidden="true">${x}</span>`).join('');
+    const vacios = new Date(y, m, 1).getDay();
+    const total = new Date(y, m + 1, 0).getDate();
+    let html = cab + '<span></span>'.repeat(vacios);
+    for (let d = 1; d <= total; d++) {
+      const iso = `${y}-${pad(m + 1)}-${pad(d)}`;
+      const e = porDia.get(iso);
+      const clases = ['dia'];
+      if (e) clases.push('tiene');
+      if (iso === hoy) clases.push('is-hoy');
+      if (iso > hoy) clases.push('is-futuro');
+      if (estado.actual && estado.actual.fecha === iso) clases.push('is-abierto');
+      const nombre = capital(fmtLarga.format(new Date(y, m, d))) + (e ? ', con página' : '');
+      html += `<button type="button" class="${clases.join(' ')}" data-dia="${iso}" aria-label="${nombre}"` +
+        (e && e.clima ? ` style="--clima: var(--c${e.clima})"` : '') + (iso > hoy ? ' tabindex="-1" aria-disabled="true"' : '') + `>${d}</button>`;
+    }
+    dias.innerHTML = html;
+  }
+
+  function pintarEtiquetas() {
+    const cuenta = new Map();
+    estado.entradas.forEach((e) => etiquetasDe(e.cuerpo || '').forEach((t) => cuenta.set(t, (cuenta.get(t) || 0) + 1)));
+    const top = [...cuenta.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 12);
+    if (estado.filtroEtiqueta && !cuenta.has(estado.filtroEtiqueta)) estado.filtroEtiqueta = null;
+    const cont = $('[data-etiquetas]');
+    cont.textContent = '';
+    top.forEach(([t]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'etiqueta';
+      b.dataset.etiqueta = t;
+      b.setAttribute('aria-pressed', String(estado.filtroEtiqueta === t));
+      b.textContent = '#' + t;
+      cont.appendChild(b);
+    });
+  }
+
+  function pintarLista() {
+    const items = visibles();
+    lista.textContent = '';
+    if (!items.length) {
+      const p = document.createElement('p');
+      p.className = 'paginas__vacio';
+      p.textContent = estado.entradas.size
+        ? 'Ninguna página coincide con la búsqueda.'
+        : (estado.cargado ? 'Aquí aparecerán tus páginas. La de hoy ya está abierta: empieza a escribir.' : 'Abriendo tu cuaderno…');
+      lista.appendChild(p);
+      return;
+    }
+    let grupo = null, ol = null;
+    items.forEach((e) => {
+      const d = aFecha(e.fecha);
+      const clave = `${d.getFullYear()}-${d.getMonth()}`;
+      if (clave !== grupo) {
+        grupo = clave;
+        const sec = document.createElement('section');
+        sec.className = 'paginas__mes';
+        const h = document.createElement('h3');
+        h.className = 'dato';
+        h.textContent = fmtMes.format(d);
+        ol = document.createElement('ol');
+        ol.style.display = 'grid';
+        ol.style.gap = '.15rem';
+        sec.append(h, ol);
+        lista.appendChild(sec);
+      }
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pagina-item';
+      b.dataset.id = e.id;
+      if (estado.actual && estado.actual.id === e.id) b.setAttribute('aria-current', 'true');
+      if (e.clima) b.style.setProperty('--clima', `var(--c${e.clima})`);
+      const primeraLinea = (e.cuerpo || '').trim().split('\n')[0];
+      b.innerHTML =
+        '<span class="pagina-item__fecha"><span class="pagina-item__dia"></span><span class="pagina-item__semana dato"></span></span>' +
+        '<span class="pagina-item__texto"><span class="pagina-item__titulo"><i aria-hidden="true"></i><span></span></span><span class="pagina-item__extracto"></span></span>';
+      b.querySelector('.pagina-item__dia').textContent = d.getDate();
+      b.querySelector('.pagina-item__semana').textContent = fmtSemana.format(d).replace('.', '');
+      b.querySelector('.pagina-item__titulo span').textContent = (e.titulo || '').trim() || primeraLinea.slice(0, 60) || 'Sin título';
+      b.querySelector('.pagina-item__extracto').textContent = (e.titulo || '').trim() ? (e.cuerpo || '').trim().slice(0, 180) : (e.cuerpo || '').trim().slice(primeraLinea.length, 200).trim();
+      li.appendChild(b);
+      ol.appendChild(li);
+    });
+  }
+
+  function pintarCifras() {
+    const todas = [...estado.entradas.values()];
+    $('[data-cifra="paginas"]').textContent = fmtNum.format(todas.length);
+    $('[data-cifra="racha"]').textContent = fmtNum.format(racha());
+    $('[data-cifra="palabras"]').textContent = fmtNum.format(todas.reduce((s, e) => s + palabras(e.cuerpo || ''), 0));
+  }
+
+  let pintando = false;
+  function pintarIndice() {
+    if (pintando) return;
+    pintando = true;
+    requestAnimationFrame(() => {
+      pintando = false;
+      pintarCalendario();
+      pintarCifras();
+      pintarEtiquetas();
+      pintarLista();
+    });
+  }
+
+  /* ---------------- Llega la lista del almacén ---------------- */
+  function recibir(listaRemota) {
+    const nueva = new Map();
+    listaRemota.forEach((e) => {
+      if (!e || typeof e.fecha !== 'string' || borradas.has(e.id)) return;
+      nueva.set(e.id, { id: e.id, fecha: e.fecha, titulo: e.titulo || '', cuerpo: e.cuerpo || '', clima: e.clima || null, creada: e.creada || 0, editada: e.editada || 0 });
+    });
+    // Lo que se está escribiendo aquí manda sobre lo que llega.
+    pendientes.forEach((id) => { const local = estado.entradas.get(id); if (local) nueva.set(id, local); });
+    const a = estado.actual;
+    if (a && (sucio || pendientes.has(a.id)) && tieneTexto(a)) nueva.set(a.id, a);
+    estado.entradas = nueva;
+
+    const primeraVez = !estado.cargado;
+    estado.cargado = true;
+    if (a) {
+      const remota = nueva.get(a.id);
+      const escribiendo = document.activeElement === cuerpo || document.activeElement === titulo;
+      if (primeraVez && !tieneTexto(a)) {
+        // Al abrir: si hoy ya escribiste, se abre esa página.
+        abrirDia(a.fecha);
+        return;
+      }
+      const cambio = remota && ['fecha', 'titulo', 'cuerpo', 'clima'].some((k) => (remota[k] || '') !== (a[k] || ''));
+      if (cambio && !sucio && !pendientes.has(a.id) && !escribiendo) {
+        abrir(remota);   // la cambiaste en otro dispositivo
+        return;
+      }
+      if (remota) estado.actual = remota;
+    }
+    pintarHoja();
+    pintarIndice();
+  }
+
+  /* ---------------- Eventos ---------------- */
+  function alEscribir() {
+    const e = estado.actual;
+    e.titulo = titulo.value;
+    e.cuerpo = cuerpo.value;
+    if (tieneTexto(e)) estado.entradas.set(e.id, e);
+    ajustarAlto();
+    pintarHoja();
+    pintarIndice();
+    programarGuardado();
+  }
+  titulo.addEventListener('input', alEscribir);
+  cuerpo.addEventListener('input', alEscribir);
+  titulo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); cuerpo.focus(); } });
+  [titulo, cuerpo].forEach((el) => el.addEventListener('blur', guardarAhora));
+
+  fecha.addEventListener('change', () => {
+    if (!fecha.value || fecha.value > hoyISO()) { fecha.value = estado.actual.fecha; return; }
+    estado.actual.fecha = fecha.value;
+    const d = aFecha(fecha.value);
+    estado.mes = { y: d.getFullYear(), m: d.getMonth() };
+    pintarHoja();
+    pintarIndice();
+    programarGuardado();
+  });
+
+  climas.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-clima]');
+    if (!b) return;
+    const v = Number(b.dataset.clima);
+    estado.actual.clima = estado.actual.clima === v ? null : v;
+    pintarHoja();
+    pintarIndice();
+    programarGuardado();
+  });
+
+  document.querySelector('[data-nueva]').addEventListener('click', () => {
+    const a = estado.actual;
+    if (a && !tieneTexto(a)) { mostrar('hoja'); cuerpo.focus(); return; }
+    abrir(nuevaPagina(), { enfocar: true });
+    mostrar('hoja');
+  });
+
+  lista.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-id]');
+    if (!b) return;
+    const e = estado.entradas.get(b.dataset.id);
+    if (e) { abrir(e); mostrar('hoja'); window.scrollTo({ top: 0 }); }
+  });
+
+  dias.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-dia]');
+    if (!b || b.classList.contains('is-futuro')) return;
+    abrirDia(b.dataset.dia, { enfocar: true });
+    mostrar('hoja');
+  });
+
+  document.querySelectorAll('[data-mes]').forEach((b) => b.addEventListener('click', () => {
+    const d = new Date(estado.mes.y, estado.mes.m + Number(b.dataset.mes), 1);
+    estado.mes = { y: d.getFullYear(), m: d.getMonth() };
+    pintarCalendario();
+  }));
+
+  $('[data-buscar]').addEventListener('input', (ev) => { estado.filtroTexto = ev.target.value; pintarLista(); });
+  $('[data-etiquetas]').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-etiqueta]');
+    if (!b) return;
+    estado.filtroEtiqueta = estado.filtroEtiqueta === b.dataset.etiqueta ? null : b.dataset.etiqueta;
+    pintarEtiquetas();
+    pintarLista();
+  });
+
+  $('[data-otra-idea]').addEventListener('click', () => {
+    estado.idea = (estado.idea + 1) % IDEAS.length;
+    $('[data-idea-texto]').textContent = IDEAS[estado.idea];
+  });
+
+  // Borrar con confirmación dentro de la página
+  const confirmar = $('[data-confirmar]');
+  $('[data-borrar]').addEventListener('click', () => { confirmar.hidden = false; $('[data-borrar-no]').focus(); });
+  $('[data-borrar-no]').addEventListener('click', () => { confirmar.hidden = true; $('[data-borrar]').focus(); });
+  $('[data-borrar-si]').addEventListener('click', async () => {
+    const e = estado.actual;
+    clearTimeout(temporizador);
+    sucio = false;
+    borradas.add(e.id);
+    pendientes.delete(e.id);
+    estado.entradas.delete(e.id);
+    confirmar.hidden = true;
+    const siguiente = visibles()[0];
+    abrir(siguiente || nuevaPagina());
+    try {
+      await (colas.get(e.id) || Promise.resolve());
+      await almacenListo;
+      await almacen.borrar(e.id);
+      marcar('ok', 'Página borrada');
+    } catch (err) {
+      marcar('error', 'No se borró');
+      avisar('No se pudo borrar la página. Revisa tu conexión e inténtalo de nuevo.');
+      borradas.delete(e.id);
+    }
+  });
+
+  // Vista en pantallas angostas: índice u hoja
+  function mostrar(vista) { document.body.dataset.vista = vista; }
+  $('[data-ver-indice]').addEventListener('click', () => { guardarAhora(); mostrar('indice'); window.scrollTo({ top: 0 }); });
+
+  window.addEventListener('resize', ajustarAlto);
+  window.addEventListener('pagehide', guardarAhora);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') guardarAhora(); });
+
+  /* ---------------- Arranque ---------------- */
+  abrir(nuevaPagina());
+
+  (async () => {
+    let elegido = null;
+    try { elegido = await almacenClaude(); } catch (e) { elegido = null; }
+    almacen = elegido || almacenLocal();
+    resolverAlmacen();
+    marcar(almacen.etiqueta.startsWith('Sin') ? 'error' : 'ok', almacen.etiqueta);
+    almacen.escuchar(recibir, () => {
+      marcar('error', 'Sin conexión con tu cuaderno');
+      avisar('Se perdió la conexión con tu cuaderno. Recarga la página para ver tus páginas al día.');
+    });
+  })();
+})();
+</script>
 </body>
 </html>
