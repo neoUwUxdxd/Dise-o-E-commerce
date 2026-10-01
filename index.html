@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lo Que Cuento</title>
-<meta name="description" content="Un cuaderno privado para contar todo: una página por día, con renglones, clima del ánimo y etiquetas.">
+<title>Proyecto Journal Taller de Lectura</title>
+<meta name="description" content="Proyecto Journal del Taller de Lectura. Un cuaderno privado para contar todo: una página por día, con renglones, clima del ánimo y etiquetas.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans+Mono:wght@400;500&family=Young+Serif&display=swap">
@@ -100,11 +100,18 @@ ol, ul { padding: 0; list-style: none; }
   margin-inline: auto;
   padding: .75rem var(--gutter);
 }
-.marca { display: flex; align-items: baseline; gap: .6rem; min-width: 0; }
-.marca__nombre { font: 400 1.45rem/1 var(--f-titulo); letter-spacing: -.01em; white-space: nowrap; }
-.marca__nombre i { font-family: var(--f-texto); font-style: italic; font-weight: 400; color: var(--margen); }
-.marca .dato { display: none; }
-@media (min-width: 720px) { .marca .dato { display: inline; } }
+.marca { min-width: 0; }
+.marca__nombre {
+  font: 400 clamp(1.05rem, .85rem + 1vw, 1.45rem)/1.15 var(--f-titulo);
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.marca__nombre i { font-family: var(--f-texto); font-style: italic; font-weight: 400; color: var(--margen); white-space: nowrap; }
+.boton .corto { display: none; }
+@media (max-width: 479px) {
+  .boton .largo { display: none; }
+  .boton .corto { display: inline; }
+}
 .barra__estado { margin-left: auto; display: flex; align-items: center; gap: .45rem; min-width: 0; }
 .barra__estado .dato { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: .02em; }
 .punto { width: .5rem; height: .5rem; flex: none; border-radius: 50%; background: var(--c2); transition: background-color .3s; }
@@ -385,8 +392,7 @@ ol, ul { padding: 0; list-style: none; }
 <header class="barra">
   <div class="barra__fila">
     <div class="marca">
-      <h1 class="marca__nombre">Lo que <i>cuento</i></h1>
-      <span class="dato">cuaderno privado</span>
+      <h1 class="marca__nombre">Proyecto Journal <i>Taller de Lectura</i></h1>
     </div>
     <div class="barra__estado" role="status" aria-live="polite">
       <span class="punto" data-punto data-estado="espera"></span>
@@ -394,7 +400,7 @@ ol, ul { padding: 0; list-style: none; }
     </div>
     <button class="boton boton--tinta" type="button" data-nueva>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      Nueva página
+      <span class="largo">Nueva página</span><span class="corto">Nueva</span>
     </button>
   </div>
 </header>

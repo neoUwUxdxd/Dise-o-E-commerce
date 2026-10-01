@@ -1,4 +1,4 @@
-# Lo que cuento
+# Proyecto Journal Taller de Lectura
 
 Un cuaderno privado para contar todo: una página por día, con renglones, el clima de tu ánimo y etiquetas.
 
