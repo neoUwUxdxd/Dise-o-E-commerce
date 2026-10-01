@@ -140,8 +140,37 @@ ol, ul { padding: 0; list-style: none; }
 .boton--suave:hover { color: var(--tinta); background: var(--linea); }
 .boton svg { width: 16px; height: 16px; }
 
+/* ---- Cielo: el clima del día animado detrás de la hoja ---------------------- */
+.cielo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+.cielo.is-on { opacity: 1; }
+/* Destello del relámpago: por encima de todo, apenas un instante */
+.relampago {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at var(--rx, 50%) 0%, color-mix(in srgb, var(--c5) 30%, #fff), transparent 75%);
+  mix-blend-mode: screen;
+}
+.relampago.is-on { animation: destello .65s ease-out; }
+@keyframes destello {
+  0% { opacity: 0; } 8% { opacity: .55; } 18% { opacity: .1; } 28% { opacity: .38; } 100% { opacity: 0; }
+}
+
 /* ---- Mesa: índice + hoja --------------------------------------------------- */
 .mesa {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1.5rem;
   max-width: 1280px;
@@ -310,7 +339,43 @@ ol, ul { padding: 0; list-style: none; }
 }
 .clima svg { width: 20px; height: 20px; }
 .clima:hover { color: var(--c); transform: translateY(-1px); }
-.clima[aria-pressed="true"] { color: var(--hoja); background: var(--c); }
+.clima[aria-pressed="true"] { color: var(--hoja); background: var(--c); box-shadow: 0 6px 18px -6px var(--c); }
+.clima.is-pop { animation: pop-clima .45s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes pop-clima { 0% { transform: scale(.8); } 100% { transform: scale(1); } }
+
+/* Cada ícono tiene su animación: quieta en reposo, viva al pasar el cursor o al estar elegida */
+.clima svg * { transform-box: fill-box; transform-origin: center; animation-play-state: paused; }
+.clima:hover svg *,
+.clima:focus-visible svg *,
+.clima[aria-pressed="true"] svg * { animation-play-state: running; }
+.ic-rayos { animation: ic-girar 9s linear infinite; }
+.ic-sol { animation: ic-latir 2.4s ease-in-out infinite; }
+.ic-rayos-chicos { animation: ic-girar 7s linear infinite; }
+.ic-nube-pasa { animation: ic-pasar 3.2s ease-in-out infinite alternate; }
+.ic-nube-flota { animation: ic-flotar 2.6s ease-in-out infinite alternate; }
+.ic-nube-tiembla { animation: ic-temblar 2.2s ease-in-out infinite; }
+.ic-gota { animation: ic-caer 1s linear infinite; }
+.ic-gota:nth-child(2) { animation-delay: -.33s; }
+.ic-gota:nth-child(3) { animation-delay: -.66s; }
+.ic-rayo { animation: ic-rayo 2.2s linear infinite; }
+@keyframes ic-girar { to { transform: rotate(360deg); } }
+@keyframes ic-latir { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes ic-pasar { from { transform: translateX(-2px); } to { transform: translateX(2.5px); } }
+@keyframes ic-flotar { from { transform: translate(-1.5px, .5px); } to { transform: translate(1.5px, -.5px); } }
+@keyframes ic-temblar {
+  0%, 60%, 100% { transform: translateX(0); }
+  64% { transform: translateX(-1.4px); } 68% { transform: translateX(1.4px); } 72% { transform: translateX(-1px); } 76% { transform: translateX(.6px); }
+}
+@keyframes ic-caer {
+  0% { transform: translate(.6px, -2.5px); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(-1.2px, 3px); opacity: 0; }
+}
+@keyframes ic-rayo {
+  0%, 58%, 100% { opacity: .25; }
+  60%, 64% { opacity: 1; } 62% { opacity: .3; }
+  66% { opacity: .25; } 68%, 70% { opacity: 1; }
+}
 .herramientas__fin { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 @media (max-width: 899px) { .herramientas__fin { margin-left: 0; } }
 
@@ -384,11 +449,14 @@ ol, ul { padding: 0; list-style: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cielo, .relampago { display: none; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 </style>
 </head>
 <body data-vista="hoja">
+<canvas class="cielo" data-cielo aria-hidden="true"></canvas>
+<div class="relampago" data-relampago aria-hidden="true"></div>
 <header class="barra">
   <div class="barra__fila">
     <div class="marca">
@@ -500,12 +568,20 @@ ol, ul { padding: 0; list-style: none; }
     '¿Qué estás cargando que podrías soltar?',
     '¿Qué canción o frase traes en la cabeza y por qué?'
   ];
+  const NUBE = (y) => `M7 ${y}h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 ${y - 6.5} 3.3 3.3 0 0 0 7 ${y}z`;
   const ICONO = {
-    1: '<circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
-    2: '<circle cx="9" cy="9" r="3.4" fill="currentColor"/><path d="M9 2.5v1.6M2.5 9h1.6M4.4 4.4l1.1 1.1M13.6 4.4l-1.1 1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8.5 19h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8.5 19z" fill="currentColor" opacity=".55"/>',
-    3: '<path d="M7 18.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 12 3.3 3.3 0 0 0 7 18.5z" fill="currentColor"/>',
-    4: '<path d="M7 14.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 8 3.3 3.3 0 0 0 7 14.5z" fill="currentColor"/><path d="M8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
-    5: '<path d="M7 13.5h10.5a4 4 0 0 0 .3-8A6 6 0 0 0 6.3 7 3.3 3.3 0 0 0 7 13.5z" fill="currentColor"/><path d="M12.5 13.5l-2.5 4h3l-2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+    1: '<g class="ic-rayos"><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>' +
+       '<circle class="ic-sol" cx="12" cy="12" r="4" fill="currentColor"/>',
+    2: '<g class="ic-rayos-chicos"><path d="M9 2.5v1.6M2.5 9h1.6M4.4 4.4l1.1 1.1M13.6 4.4l-1.1 1.1M9 14v1.6M13.6 13.6l-1.1-1.1M4.4 13.6l1.1-1.1M15.5 9h-1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>' +
+       '<circle cx="9" cy="9" r="3.4" fill="currentColor"/>' +
+       '<path class="ic-nube-pasa" d="M8.5 19h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8.5 19z" fill="currentColor" opacity=".6"/>',
+    3: `<path class="ic-nube-flota" d="${NUBE(18.5)}" fill="currentColor"/>`,
+    4: `<path class="ic-nube-flota" d="${NUBE(14.5)}" fill="currentColor"/>` +
+       '<g><path class="ic-gota" d="M8.5 17.2l-.8 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+       '<path class="ic-gota" d="M12.5 17.2l-.8 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+       '<path class="ic-gota" d="M16.5 17.2l-.8 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>',
+    5: `<path class="ic-nube-tiembla" d="${NUBE(13.5)}" fill="currentColor"/>` +
+       '<path class="ic-rayo" d="M12.5 13.5l-2.5 4h3l-2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
   };
   const CLIMAS = [
     { v: 1, nombre: 'Despejado' },
@@ -705,6 +781,7 @@ ol, ul { padding: 0; list-style: none; }
     const e = estado.actual;
     fechaTexto.textContent = capital(fmtLarga.format(aFecha(e.fecha)));
     climas.querySelectorAll('[data-clima]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.clima) === e.clima)));
+    Cielo.poner(e.clima);
     const n = palabras(e.cuerpo || '');
     $('[data-conteo]').textContent = n
       ? `${fmtNum.format(n)} ${n === 1 ? 'palabra' : 'palabras'} · ${Math.max(1, Math.round(n / 200))} min de lectura`
@@ -915,6 +992,9 @@ ol, ul { padding: 0; list-style: none; }
     if (!b) return;
     const v = Number(b.dataset.clima);
     estado.actual.clima = estado.actual.clima === v ? null : v;
+    b.classList.remove('is-pop');
+    void b.offsetWidth;
+    b.classList.add('is-pop');
     pintarHoja();
     pintarIndice();
     programarGuardado();
@@ -994,6 +1074,296 @@ ol, ul { padding: 0; list-style: none; }
   window.addEventListener('resize', ajustarAlto);
   window.addEventListener('pagehide', guardarAhora);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') guardarAhora(); });
+
+  /* ---------------- Cielo: el clima del día, animado en el fondo ----------------
+     1 despejado: luz cálida, rayos y polvo dorado · 2 templado: sol suave y nubes con brisa
+     3 nublado: capas de nubes · 4 lluvia: lluvia con salpicaduras
+     5 tormenta: viento en ráfagas, lluvia inclinada, hojas, nubes rápidas y relámpagos */
+  const Cielo = (() => {
+    const cv = $('[data-cielo]');
+    const flash = $('[data-relampago]');
+    const ctx = cv.getContext('2d');
+    const menosMov = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const aleat = (a, b) => a + Math.random() * (b - a);
+    let w = 0, h = 0, tipo = null, raf = 0, previo = 0, tiempo = 0, cambio = 0;
+    let col = {}, oscuro = false, sprite = null;
+    let motas = [], nubes = [], gotas = [], chispas = [], rafagas = [], hojas = [];
+    let viento = 0, racha = 0, proximoRayo = 0, rayo = null;
+
+    function leerColores() {
+      const cs = getComputedStyle(document.documentElement);
+      ['c1', 'c2', 'c3', 'c4', 'c5', 'tinta', 'tinta-2', 'mesa'].forEach((k) => { col[k] = cs.getPropertyValue('--' + k).trim(); });
+      oscuro = cs.colorScheme === 'dark' || cs.getPropertyValue('color-scheme').trim() === 'dark';
+      sprite = hacerNube();
+    }
+
+    /* Una nube suave dibujada una vez y reutilizada: bocanadas sólidas que luego se difuminan juntas */
+    function hacerNube() {
+      const base = document.createElement('canvas');
+      base.width = 460; base.height = 330;
+      const g = base.getContext('2d');
+      g.fillStyle = oscuro ? col.c3 : col['tinta-2'];
+      [[130, 130, 60], [195, 104, 72], [262, 126, 58], [170, 146, 52], [230, 148, 54], [102, 150, 38], [302, 150, 36], [200, 150, 70]].forEach(([x, y, r]) => {
+        g.beginPath(); g.arc(x + 30, y + 45, r, 0, Math.PI * 2); g.fill();
+      });
+      const c = document.createElement('canvas');
+      c.width = base.width; c.height = base.height;
+      const b = c.getContext('2d');
+      b.filter = 'blur(18px)';
+      b.drawImage(base, 0, 0);
+      return b.filter === 'blur(18px)' ? c : base;
+    }
+
+    function medir() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = window.innerWidth; h = window.innerHeight;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    const cuantos = (porMillon) => Math.round((w * h / 1e6) * porMillon);
+    const nube = (velMin, velMax, yMax, alfa, escala) => ({
+      x: aleat(-0.3, 1.1) * w, y: aleat(-0.05, yMax) * h, s: aleat(escala[0], escala[1]),
+      v: aleat(velMin, velMax), a: aleat(alfa[0], alfa[1])
+    });
+    const gota = (y) => ({ x: aleat(-0.2, 1.2) * w, y: y ?? aleat(-h, h), l: aleat(10, 22), v: aleat(650, 950), a: aleat(.35, .8) });
+
+    function preparar() {
+      motas = []; nubes = []; gotas = []; chispas = []; rafagas = []; hojas = []; rayo = null;
+      viento = 0; racha = 0; proximoRayo = tiempo + aleat(1.2, 3);
+      if (tipo === 1) {
+        motas = Array.from({ length: cuantos(55) }, () => ({ x: aleat(0, w), y: aleat(0, h), r: aleat(.6, 2.2), v: aleat(6, 22), f: aleat(0, 6.3) }));
+      } else if (tipo === 2) {
+        motas = Array.from({ length: cuantos(22) }, () => ({ x: aleat(0, w), y: aleat(0, h), r: aleat(.6, 1.8), v: aleat(4, 12), f: aleat(0, 6.3) }));
+        nubes = Array.from({ length: 5 }, () => nube(10, 22, .55, [.35, .6], [.7, 1.3]));
+      } else if (tipo === 3) {
+        nubes = Array.from({ length: Math.max(8, cuantos(9)) }, () => nube(6, 26, .9, [.3, .75], [.8, 2]));
+      } else if (tipo === 4) {
+        nubes = Array.from({ length: 5 }, () => nube(8, 16, .2, [.45, .75], [1.2, 2]));
+        gotas = Array.from({ length: cuantos(140) }, () => gota());
+      } else if (tipo === 5) {
+        nubes = Array.from({ length: 9 }, () => nube(70, 150, .28, [.6, .9], [1.3, 2.4]));
+        gotas = Array.from({ length: cuantos(300) }, () => ({ ...gota(), v: aleat(900, 1300), l: aleat(16, 30) }));
+        rafagas = Array.from({ length: Math.max(10, cuantos(16)) }, () => nuevaRafaga(true));
+        hojas = Array.from({ length: Math.max(6, cuantos(7)) }, () => nuevaHoja(true));
+      }
+    }
+
+    const nuevaRafaga = (dentro) => ({ x: dentro ? aleat(-w, w) : aleat(-1.2, -0.3) * w, y: aleat(.05, .95) * h, l: aleat(120, 320), v: aleat(700, 1300), a: aleat(.12, .35), o: aleat(0, 6.3) });
+    const nuevaHoja = (dentro) => ({ x: dentro ? aleat(0, w) : aleat(-160, -20), y: aleat(.1, .9) * h, r: aleat(0, 6.3), vr: aleat(-8, 8), v: aleat(380, 700), s: aleat(4, 7), f: aleat(0, 6.3) });
+
+    /* Un rayo: una línea quebrada con ramas, desde arriba */
+    function nuevoRayo() {
+      const pts = [[aleat(.15, .85) * w, 0]];
+      const ramas = [];
+      while (pts[pts.length - 1][1] < h * aleat(.45, .75)) {
+        const [x, y] = pts[pts.length - 1];
+        const p = [x + aleat(-38, 38), y + aleat(18, 46)];
+        pts.push(p);
+        if (Math.random() < .22) {
+          const rama = [p];
+          for (let i = 0; i < 4; i++) { const q = rama[rama.length - 1]; rama.push([q[0] + aleat(-40, 40), q[1] + aleat(14, 34)]); }
+          ramas.push(rama);
+        }
+      }
+      flash.style.setProperty('--rx', (pts[0][0] / w * 100).toFixed(0) + '%');
+      flash.classList.remove('is-on'); void flash.offsetWidth; flash.classList.add('is-on');
+      return { pts, ramas, vida: .5 };
+    }
+
+    function trazo(pts, ancho, alfa) {
+      ctx.globalAlpha = alfa;
+      ctx.lineWidth = ancho;
+      ctx.beginPath();
+      pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.stroke();
+    }
+
+    function velo(color, alfa) { ctx.globalAlpha = alfa; ctx.fillStyle = color; ctx.fillRect(0, 0, w, h); }
+
+    function dibujarNubes(dt, empuje) {
+      nubes.forEach((n) => {
+        n.x += (n.v + empuje) * dt;
+        const ancho = sprite.width * n.s;
+        if (n.x > w + 40) { n.x = -ancho - aleat(0, 200); n.y = aleat(-0.05, tipo === 3 ? .9 : tipo === 2 ? .55 : .25) * h; }
+        ctx.globalAlpha = n.a * (oscuro ? .4 : .42);
+        ctx.drawImage(sprite, n.x, n.y, ancho, sprite.height * n.s);
+      });
+    }
+
+    function luzDelSol(fuerza, radio) {
+      const x = w * .88, y = -h * .08;
+      const pulso = 1 + Math.sin(tiempo * .6) * .06;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, Math.max(w, h) * radio * pulso);
+      g.addColorStop(0, col.c1); g.addColorStop(1, 'transparent');
+      ctx.globalAlpha = fuerza; ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      // rayos que giran despacio
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tiempo * .035);
+      ctx.fillStyle = col.c1;
+      for (let i = 0; i < 12; i++) {
+        ctx.rotate(Math.PI * 2 / 12);
+        ctx.globalAlpha = fuerza * (.18 + .1 * Math.sin(tiempo * .8 + i));
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.max(w, h) * 1.3, -60); ctx.lineTo(Math.max(w, h) * 1.3, 60); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function dibujarMotas(dt, brisa) {
+      ctx.fillStyle = col.c1;
+      motas.forEach((m) => {
+        m.y -= m.v * dt;
+        m.x += (Math.sin(tiempo * .7 + m.f) * 10 + brisa) * dt;
+        if (m.y < -10) { m.y = h + 10; m.x = aleat(0, w); }
+        if (m.x > w + 10) m.x = -10;
+        ctx.globalAlpha = .25 + .35 * (0.5 + 0.5 * Math.sin(tiempo * 2 + m.f));
+        ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function dibujarLluvia(dt, inclinacion, color, ancho) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = ancho;
+      ctx.lineCap = 'round';
+      const vx = inclinacion;
+      gotas.forEach((g) => {
+        g.y += g.v * dt;
+        g.x += vx * g.v * dt;
+        if (g.y > h) {
+          if (Math.random() < .35) chispas.push({ x: g.x, y: h - aleat(2, 30), t: 0 });
+          Object.assign(g, gota(aleat(-120, -10)));
+          if (tipo === 5) { g.v = aleat(900, 1300); g.l = aleat(16, 30); g.x = aleat(-0.6, 1.1) * w; }
+        }
+        ctx.globalAlpha = g.a * (tipo === 5 ? .55 : .45);
+        ctx.beginPath();
+        ctx.moveTo(g.x, g.y);
+        ctx.lineTo(g.x - vx * g.l, g.y - g.l);
+        ctx.stroke();
+      });
+      // salpicaduras: pequeños arcos que se abren y desaparecen
+      ctx.lineWidth = 1;
+      chispas = chispas.filter((c) => {
+        c.t += dt;
+        if (c.t > .3) return false;
+        ctx.globalAlpha = (1 - c.t / .3) * .45;
+        ctx.beginPath(); ctx.ellipse(c.x, c.y, 2 + c.t * 26, 1 + c.t * 6, 0, Math.PI, 0); ctx.stroke();
+        return true;
+      });
+    }
+
+    function cuadro(ahora) {
+      raf = requestAnimationFrame(cuadro);
+      const dt = Math.min(.05, (ahora - previo) / 1000 || 0);
+      previo = ahora;
+      tiempo += dt;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+
+      if (tipo === 1) {
+        luzDelSol(oscuro ? .16 : .22, .75);
+        dibujarMotas(dt, 6);
+      } else if (tipo === 2) {
+        luzDelSol(oscuro ? .1 : .13, .5);
+        dibujarNubes(dt, 0);
+        dibujarMotas(dt, 28);
+      } else if (tipo === 3) {
+        velo(col.c3, oscuro ? .05 : .07);
+        dibujarNubes(dt, 0);
+      } else if (tipo === 4) {
+        velo(col.c4, oscuro ? .05 : .05);
+        dibujarNubes(dt, 0);
+        dibujarLluvia(dt, -.12 + Math.sin(tiempo * .4) * .04, col.c4, 1.2);
+      } else if (tipo === 5) {
+        // viento: base fuerte, oleaje lento y ráfagas que llegan de golpe y se calman
+        if (Math.random() < dt * .35) racha = aleat(.25, .5);
+        racha *= Math.pow(.25, dt);
+        viento = .38 + Math.sin(tiempo * .7) * .1 + racha;
+        velo(oscuro ? '#000' : col.tinta, oscuro ? .22 : .07);
+        dibujarNubes(dt, viento * 220);
+        dibujarLluvia(dt, viento, oscuro ? col.c3 : col['tinta-2'], 1.3);
+        // corrientes de aire: trazos largos y ondulados que cruzan la pantalla
+        ctx.strokeStyle = oscuro ? col.c3 : col['tinta-2'];
+        ctx.lineWidth = 1.2;
+        rafagas.forEach((r) => {
+          r.x += r.v * (.6 + viento) * dt;
+          if (r.x > w + 40) Object.assign(r, nuevaRafaga(false));
+          ctx.globalAlpha = r.a;
+          ctx.beginPath();
+          for (let i = 0; i <= 12; i++) {
+            const px = r.x - r.l + (r.l * i) / 12;
+            const py = r.y + Math.sin(i * .55 + tiempo * 5 + r.o) * 4;
+            i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          }
+          ctx.stroke();
+        });
+        // hojas arrastradas por el viento
+        hojas.forEach((f) => {
+          f.x += f.v * (.5 + viento) * dt;
+          f.y += Math.sin(tiempo * 3 + f.f) * 70 * dt;
+          f.r += f.vr * dt;
+          if (f.x > w + 30) Object.assign(f, nuevaHoja(false));
+          ctx.save();
+          ctx.translate(f.x, f.y); ctx.rotate(f.r);
+          ctx.globalAlpha = .6;
+          ctx.fillStyle = col.c2;
+          ctx.beginPath(); ctx.ellipse(0, 0, f.s * 1.6, f.s * .7, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        });
+        // relámpagos
+        if (tiempo > proximoRayo) { rayo = nuevoRayo(); proximoRayo = tiempo + aleat(2.5, 7); }
+        if (rayo) {
+          rayo.vida -= dt;
+          if (rayo.vida <= 0) rayo = null;
+          else {
+            const a = Math.min(1, rayo.vida / .2) * (rayo.vida > .35 && rayo.vida < .42 ? .3 : 1);
+            ctx.strokeStyle = oscuro ? '#FFFFFF' : col.c5;
+            ctx.shadowColor = col.c5; ctx.shadowBlur = 18;
+            trazo(rayo.pts, 2.4, a);
+            rayo.ramas.forEach((r) => trazo(r, 1.2, a * .7));
+            ctx.shadowBlur = 0;
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function arrancar() {
+      if (raf || !tipo || document.hidden) return;
+      previo = performance.now();
+      raf = requestAnimationFrame(cuadro);
+    }
+    function parar() { cancelAnimationFrame(raf); raf = 0; }
+
+    function poner(v) {
+      v = v || null;
+      if (v === tipo) return;
+      const mio = ++cambio;
+      const habia = tipo;
+      cv.classList.remove('is-on');
+      if (menosMov.matches) { tipo = v; parar(); return; }
+      // se desvanece el clima anterior y entra el nuevo
+      setTimeout(() => {
+        if (mio !== cambio) return;
+        tipo = v;
+        parar();
+        ctx.clearRect(0, 0, w, h);
+        if (!v) return;
+        preparar();
+        arrancar();
+        requestAnimationFrame(() => cv.classList.add('is-on'));
+      }, habia ? 420 : 0);
+    }
+
+    medir();
+    leerColores();
+    window.addEventListener('resize', () => { medir(); if (tipo) preparar(); });
+    document.addEventListener('visibilitychange', () => (document.hidden ? parar() : arrancar()));
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', leerColores);
+    new MutationObserver(leerColores).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    menosMov.addEventListener('change', () => { if (menosMov.matches) { parar(); cv.classList.remove('is-on'); } else if (tipo) { const t = tipo; tipo = null; poner(t); } });
+    return { poner };
+  })();
 
   /* ---------------- Arranque ---------------- */
   abrir(nuevaPagina());
